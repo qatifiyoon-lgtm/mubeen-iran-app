@@ -1,0 +1,135 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>مبين نيوز</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <defs>
+    <linearGradient id="mbnGrad" x1="0" y1="0" x2="0.4" y2="1">
+      <stop offset="0" stop-color="#FFB547"/><stop offset="0.55" stop-color="#FF7A00"/><stop offset="1" stop-color="#C24E00"/>
+    </linearGradient>
+    <symbol id="flame" viewBox="0 0 80 160">
+      <g fill="url(#mbnGrad)">
+        <path d="M66 2C62 28 40 44 22 58C16 63 12 70 12 80C24 60 50 48 62 26C66 18 68 10 66 2Z"/>
+        <path d="M66 44C62 70 40 86 22 100C16 105 12 112 12 122C24 102 50 90 62 68C66 60 68 52 66 44Z"/>
+        <path d="M66 86C62 112 40 128 22 142C16 147 12 152 12 160C24 144 50 132 62 110C66 102 68 94 66 86Z"/>
+      </g>
+    </symbol>
+    <symbol id="i-siren" viewBox="0 0 64 64"><g fill="none" stroke="currentColor" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"><path d="M20 46V32a12 12 0 0 1 24 0v14"/><path d="M14 46h36v8H14z"/><path d="M32 10v-4"/><path d="M14 18l-3-3"/><path d="M50 18l3-3"/><path d="M8 32H4"/><path d="M60 32h-4"/><path d="M27 34a5 5 0 0 1 5-5"/></g></symbol>
+    <symbol id="i-news" viewBox="0 0 64 64"><g fill="none" stroke="currentColor" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"><path d="M12 12h34v40H16a4 4 0 0 1-4-4z"/><path d="M46 22h6v26a4 4 0 0 1-4 4h-2"/><path d="M19 20h20"/><path d="M19 28h8v8h-8z"/><path d="M32 29h7"/><path d="M32 35h7"/><path d="M19 43h20"/></g></symbol>
+    <symbol id="i-quran" viewBox="0 0 64 64"><g fill="none" stroke="currentColor" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"><path d="M32 26c-6-4-14-5-22-4v26c8-1 16 0 22 4"/><path d="M32 26c6-4 14-5 22-4v26c-8-1-16 0-22 4"/><path d="M32 26v26"/><path d="M26 12a8 8 0 0 1 12 0"/><path d="M21 7a15 15 0 0 1 22 0"/></g></symbol>
+    <symbol id="i-live" viewBox="0 0 64 64"><g fill="none" stroke="currentColor" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"><path d="M8 16h48v32H8z"/><path d="M22 56h20"/><path d="M32 48v8"/><path d="M27 25v14l12-7z" fill="currentColor"/><path d="M24 6l8 8 8-8"/></g></symbol>
+    <symbol id="i-play" viewBox="0 0 24 24"><path d="M8 5v14l11-7z" fill="currentColor"/></symbol>
+    <symbol id="i-refresh" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M20 11a8 8 0 1 0-2.3 5.7"/><path d="M20 4v7h-7"/></g></symbol>
+  </defs>
+</svg>
+
+<header class="top">
+  <div class="brand">
+    <svg class="mark"><use href="#flame"/></svg>
+    <div class="brand-text">
+      <b>مبين <span>نيوز</span></b>
+      <small dir="ltr">MUBEEN NEWS</small>
+    </div>
+  </div>
+  <div class="top-left">
+    <span id="netBadge" class="net" hidden></span>
+    <button id="refreshBtn" class="icon-btn" aria-label="تحديث"><svg><use href="#i-refresh"/></svg></button>
+  </div>
+</header>
+
+<div class="ticker" id="ticker">
+  <div class="ticker-label"><span class="dot"></span>عاجل</div>
+  <div class="ticker-window" id="tickerWindow"><div class="ticker-track" id="tickerTrack"></div></div>
+</div>
+
+<main id="views">
+  <section class="view active" id="view-breaking">
+    <div class="banner">
+      <div class="banner-text">
+        <span class="pill"><i></i>لحظة بلحظة</span>
+        <h1>عاجل</h1>
+        <p>آخر الأخبار العاجلة من مصادر داخل إيران</p>
+      </div>
+      <div class="banner-art"><span class="stripe s1"></span><span class="stripe s2"></span><div class="circle"><svg><use href="#i-siren"/></svg></div></div>
+    </div>
+    <ol class="breaking-list" id="breakingList"></ol>
+  </section>
+
+  <section class="view" id="view-news">
+    <div class="banner">
+      <div class="banner-text">
+        <span class="pill">مهر • إرنا • تسنيم</span>
+        <h1>الأخبار</h1>
+        <p>تغطية شاملة لأخبار إيران والمنطقة والعالم</p>
+      </div>
+      <div class="banner-art"><span class="stripe s1"></span><span class="stripe s2"></span><div class="circle"><svg><use href="#i-news"/></svg></div></div>
+    </div>
+    <div class="chips" id="chips"></div>
+    <div class="news-list" id="newsList"></div>
+  </section>
+
+  <section class="view" id="view-quran">
+    <div class="banner">
+      <div class="banner-text">
+        <span class="pill"><i></i>بث على مدار الساعة</span>
+        <p class="pre">إذاعة</p>
+        <h1 class="amiri">القرآن الكريم</h1>
+      </div>
+      <div class="banner-art"><span class="stripe s1"></span><span class="stripe s2"></span><div class="circle"><svg><use href="#i-quran"/></svg></div></div>
+    </div>
+    <div class="stream-card big" data-stream="quran">
+      <div class="stream-info">
+        <b class="amiri">إذاعة القرآن الكريم</b>
+        <span>تلاوات مباشرة على مدار الساعة</span>
+      </div>
+      <button class="play-btn" aria-label="تشغيل"><svg><use href="#i-play"/></svg></button>
+    </div>
+  </section>
+
+  <section class="view" id="view-live">
+    <div class="banner">
+      <div class="banner-text">
+        <span class="pill red"><i></i>مباشر</span>
+        <h1 class="long">البث المباشر</h1>
+        <p>قناة العالم • قناة الكوثر</p>
+      </div>
+      <div class="banner-art"><span class="stripe s1"></span><span class="stripe s2"></span><div class="circle"><svg><use href="#i-live"/></svg></div></div>
+    </div>
+    <div class="stream-card" data-stream="alalam">
+      <div class="stream-logo">العالم</div>
+      <div class="stream-info"><b>قناة العالم</b><span>إخبارية • بث مباشر</span></div>
+      <button class="play-btn" aria-label="تشغيل"><svg><use href="#i-play"/></svg></button>
+    </div>
+    <div class="stream-card" data-stream="kawthar">
+      <div class="stream-logo">الكوثر</div>
+      <div class="stream-info"><b>قناة الكوثر</b><span>منوعة • بث مباشر</span></div>
+      <button class="play-btn" aria-label="تشغيل"><svg><use href="#i-play"/></svg></button>
+    </div>
+    <p class="note">البث من تلوبيون ويعمل داخل إيران حتى أثناء قطع الإنترنت الدولي.</p>
+  </section>
+</main>
+
+<nav class="tabs">
+  <button class="tab active" data-view="breaking"><svg><use href="#i-siren"/></svg>عاجل</button>
+  <button class="tab" data-view="news"><svg><use href="#i-news"/></svg>الأخبار</button>
+  <button class="tab" data-view="quran"><svg><use href="#i-quran"/></svg>القرآن الكريم</button>
+  <button class="tab" data-view="live"><svg><use href="#i-live"/></svg>البث المباشر</button>
+</nav>
+
+<div class="detail" id="detail" hidden>
+  <div class="detail-bar">
+    <button class="back" id="detailBack">→ رجوع</button>
+    <button class="ghost" id="detailShare">مشاركة</button>
+  </div>
+  <article class="detail-body" id="detailBody"></article>
+</div>
+
+<div class="toast" id="toast" hidden></div>
+<script src="app.js"></script>
+</body>
+</html>
