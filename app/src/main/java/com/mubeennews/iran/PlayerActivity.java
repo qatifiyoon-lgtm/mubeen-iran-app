@@ -3,7 +3,6 @@ package com.mubeennews.iran;
 import android.app.Activity;
 import android.graphics.Color;
 import android.graphics.Typeface;
-import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
@@ -17,11 +16,27 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.TextView;
-import android.widget.VideoView;
+
+import androidx.annotation.NonNull;
+import androidx.media3.common.MediaItem;
+import androidx.media3.common.PlaybackException;
+import androidx.media3.common.Player;
+import androidx.media3.datasource.DefaultHttpDataSource;
+import androidx.media3.datasource.HttpDataSource;
+import androidx.media3.exoplayer.ExoPlayer;
+import androidx.media3.exoplayer.hls.HlsMediaSource;
+import androidx.media3.ui.PlayerView;
+
+import java.util.HashMap;
+import java.util.Map;
 
 public class PlayerActivity extends Activity {
 
-    private VideoView video;
+    private static final String UA =
+            "Mozilla/5.0 (Linux; Android 12) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120 Mobile Safari/537.36";
+
+    private ExoPlayer player;
+    private PlayerView view;
     private ProgressBar spinner;
     private TextView status;
     private String url;
@@ -40,10 +55,11 @@ public class PlayerActivity extends Activity {
         FrameLayout root = new FrameLayout(this);
         root.setBackgroundColor(Color.BLACK);
 
-        video = new VideoView(this);
-        FrameLayout.LayoutParams vp = new FrameLayout.LayoutParams(
-                ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT, Gravity.CENTER);
-        root.addView(video, vp);
+        view = new PlayerView(this);
+        view.setKeepScreenOn(true);
+        if (audio) view.setUseController(false);
+        root.addView(view, new FrameLayout.LayoutParams(
+                ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
 
         if (audio) {
             LinearLayout box = new LinearLayout(this);
@@ -78,9 +94,8 @@ public class PlayerActivity extends Activity {
         top.setTypeface(Typeface.DEFAULT_BOLD);
         top.setPadding(32, 24, 32, 24);
         top.setBackgroundColor(Color.parseColor("#99000000"));
-        FrameLayout.LayoutParams tp = new FrameLayout.LayoutParams(
-                ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT, Gravity.TOP | Gravity.RIGHT);
-        root.addView(top, tp);
+        root.addView(top, new FrameLayout.LayoutParams(
+                ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT, Gravity.TOP | Gravity.RIGHT));
 
         spinner = new ProgressBar(this);
         root.addView(spinner, new FrameLayout.LayoutParams(
@@ -88,94 +103,116 @@ public class PlayerActivity extends Activity {
 
         status = new TextView(this);
         status.setTextColor(Color.parseColor("#FFB547"));
-        status.setTextSize(15);
+        status.setTextSize(14);
         status.setGravity(Gravity.CENTER);
-        status.setPadding(40, 0, 40, 60);
-        FrameLayout.LayoutParams sp = new FrameLayout.LayoutParams(
-                ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT, Gravity.BOTTOM);
-        root.addView(status, sp);
+        status.setPadding(40, 0, 40, 80);
+        root.addView(status, new FrameLayout.LayoutParams(
+                ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT, Gravity.BOTTOM));
 
-        setContentView(root);
-
-        video.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
-            @Override
-            public void onPrepared(MediaPlayer mp) {
-                spinner.setVisibility(View.GONE);
-                status.setText("");
-                retries = 0;
-                video.start();
-            }
-        });
-        video.setOnInfoListener(new MediaPlayer.OnInfoListener() {
-            @Override
-            public boolean onInfo(MediaPlayer mp, int what, int extra) {
-                if (what == MediaPlayer.MEDIA_INFO_BUFFERING_START) spinner.setVisibility(View.VISIBLE);
-                if (what == MediaPlayer.MEDIA_INFO_BUFFERING_END || what == MediaPlayer.MEDIA_INFO_VIDEO_RENDERING_START)
-                    spinner.setVisibility(View.GONE);
-                return false;
-            }
-        });
-        video.setOnErrorListener(new MediaPlayer.OnErrorListener() {
-            @Override
-            public boolean onError(MediaPlayer mp, int what, int extra) {
-                retry();
-                return true;
-            }
-        });
-        video.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
-            @Override
-            public void onCompletion(MediaPlayer mp) {
-                retry();
-            }
-        });
         root.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (!video.isPlaying()) { retries = 0; start(); }
+                if (player != null && !player.isPlaying()) { retries = 0; start(); }
             }
         });
 
+        setContentView(root);
+        buildPlayer();
         start();
+    }
+
+    private void buildPlayer() {
+        Map<String, String> headers = new HashMap<>();
+        headers.put("Referer", "https://telewebion.ir/");
+        headers.put("Origin", "https://telewebion.ir");
+
+        DefaultHttpDataSource.Factory http = new DefaultHttpDataSource.Factory()
+                .setUserAgent(UA)
+                .setAllowCrossProtocolRedirects(true)
+                .setConnectTimeoutMs(15000)
+                .setReadTimeoutMs(20000)
+                .setDefaultRequestProperties(headers);
+
+        player = new ExoPlayer.Builder(this).build();
+        view.setPlayer(player);
+        player.setMediaSource(new HlsMediaSource.Factory(http)
+                .setAllowChunklessPreparation(true)
+                .createMediaSource(MediaItem.fromUri(Uri.parse(url))));
+
+        player.addListener(new Player.Listener() {
+            @Override
+            public void onPlaybackStateChanged(int state) {
+                if (state == Player.STATE_BUFFERING) spinner.setVisibility(View.VISIBLE);
+                else if (state == Player.STATE_READY) {
+                    spinner.setVisibility(View.GONE);
+                    status.setText("");
+                    retries = 0;
+                } else if (state == Player.STATE_ENDED) retry("انتهى البث");
+            }
+
+            @Override
+            public void onPlayerError(@NonNull PlaybackException error) {
+                retry(describe(error));
+            }
+        });
+    }
+
+    private String describe(PlaybackException e) {
+        Throwable c = e.getCause();
+        if (c instanceof HttpDataSource.InvalidResponseCodeException) {
+            int code = ((HttpDataSource.InvalidResponseCodeException) c).responseCode;
+            if (code == 403 || code == 451)
+                return "الخادم رفض الاتصال (" + code + ") — البث يعمل فقط من إنترنت إيراني، أوقف الـ VPN";
+            return "خطأ من الخادم (" + code + ")";
+        }
+        if (e.errorCode == PlaybackException.ERROR_CODE_IO_NETWORK_CONNECTION_FAILED
+                || e.errorCode == PlaybackException.ERROR_CODE_IO_NETWORK_CONNECTION_TIMEOUT)
+            return "تعذّر الوصول إلى خادم البث — تأكد من الإنترنت أو أوقف الـ VPN";
+        return e.getErrorCodeName();
     }
 
     private void start() {
         spinner.setVisibility(View.VISIBLE);
         status.setText("جارٍ الاتصال بالبث…");
-        video.setVideoURI(Uri.parse(url));
+        if (player.getPlaybackState() == Player.STATE_IDLE || player.getPlayerError() != null) {
+            player.seekToDefaultPosition();
+            player.prepare();
+        }
+        player.setPlayWhenReady(true);
     }
 
-    private void retry() {
+    private void retry(String reason) {
         retries++;
-        if (retries > 6) {
+        if (retries > 5) {
             spinner.setVisibility(View.GONE);
-            status.setText("تعذّر تشغيل البث. تأكد من الاتصال ثم اضغط على الشاشة لإعادة المحاولة.");
+            status.setText("تعذّر تشغيل البث:\n" + reason + "\nاضغط على الشاشة لإعادة المحاولة.");
             return;
         }
-        status.setText("إعادة الاتصال… (" + retries + ")");
+        status.setText("إعادة الاتصال (" + retries + ")…\n" + reason);
         h.postDelayed(new Runnable() {
             @Override
             public void run() {
-                if (!isFinishing()) start();
+                if (!isFinishing() && player != null) start();
             }
         }, 3000);
     }
 
     @Override
-    protected void onPause() {
-        super.onPause();
-        video.pause();
+    protected void onStop() {
+        super.onStop();
+        if (player != null) player.setPlayWhenReady(false);
     }
 
     @Override
-    protected void onResume() {
-        super.onResume();
-        if (url != null && !video.isPlaying() && retries == 0 && spinner.getVisibility() != View.VISIBLE) start();
+    protected void onStart() {
+        super.onStart();
+        if (player != null) player.setPlayWhenReady(true);
     }
 
     @Override
     protected void onDestroy() {
         h.removeCallbacksAndMessages(null);
-        video.stopPlayback();
+        if (player != null) { player.release(); player = null; }
         super.onDestroy();
     }
 }
