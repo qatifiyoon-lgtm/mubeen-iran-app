@@ -17,7 +17,6 @@ import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
-import androidx.annotation.NonNull;
 import androidx.media3.common.MediaItem;
 import androidx.media3.common.PlaybackException;
 import androidx.media3.common.Player;
@@ -151,7 +150,7 @@ public class PlayerActivity extends Activity {
             }
 
             @Override
-            public void onPlayerError(@NonNull PlaybackException error) {
+            public void onPlayerError(PlaybackException error) {
                 retry(describe(error));
             }
         });
