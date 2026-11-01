@@ -1,0 +1,42 @@
+name: Publish APK and store files
+
+on:
+  push:
+    branches: [ main ]
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+      - uses: gradle/actions/setup-gradle@v4
+        with:
+          gradle-version: '8.9'
+      - name: Fonts
+        run: |
+          mkdir -p app/src/main/assets/fonts
+          curl -fsSL -o app/src/main/assets/fonts/Cairo.ttf "https://github.com/google/fonts/raw/main/ofl/cairo/Cairo%5Bslnt%2Cwght%5D.ttf"
+          curl -fsSL -o app/src/main/assets/fonts/Amiri-Bold.ttf "https://github.com/google/fonts/raw/main/ofl/amiri/Amiri-Bold.ttf"
+      - name: Build APK
+        run: gradle assembleRelease --no-daemon
+      - name: Store images
+        run: |
+          pip install -q playwright==1.47.0
+          python -m playwright install --with-deps chromium > /dev/null
+          python store/shots.py
+      - name: Push to apk branch
+        run: |
+          cp app/build/outputs/apk/release/app-release.apk out/MubeenNews-Iran.apk
+          cd out
+          git init -q -b apk
+          git add -A
+          git -c user.name=ci -c user.email=ci@users.noreply.github.com commit -qm "build ${{ github.sha }}"
+          git push -qf "https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}.git" apk
