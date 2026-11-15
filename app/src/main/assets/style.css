@@ -169,3 +169,11 @@ body.reels-mode .ticker { display: none; }
 .reel-cap { position: absolute; bottom: 0; left: 0; right: 0; padding: 40px 16px 16px; color: #fff; font-weight: 700; font-size: 15px; line-height: 1.6; background: linear-gradient(transparent, rgba(0,0,0,.85)); }
 
 .lang-btn { font-weight: 900; font-size: 15px; margin-inline-start: 6px; }
+
+.src-line { margin: 18px 0 8px; font-size: 14px; font-weight: 800; color: var(--orange); }
+
+.acts { display: flex; gap: 18px; margin-top: 8px; }
+.act { font-size: 13px; font-weight: 800; color: #9a9a9a; padding: 4px 2px; cursor: pointer; user-select: none; }
+.act.like.on { color: #ff4d5e; }
+.act.share { color: var(--orange); }
+.card[role=button] { cursor: pointer; }

@@ -58,7 +58,7 @@
           alalamShort: "العالم", alalam: "قناة العالم", alalamSub: "إخبارية • بث مباشر", kawtharShort: "الكوثر", kawthar: "قناة الكوثر",
           kawtharSub: "منوعة • بث مباشر", reels: "ريلز", reelsLoading: "جارٍ تحميل المقاطع…", reelsEmpty: "لا توجد مقاطع حالياً",
           back: "→ رجوع", share: "مشاركة", tickerLoading: "جارٍ تحميل الأخبار العاجلة…", noBreaking: "لا توجد أخبار عاجلة بعد",
-          noNews: "لا توجد أخبار حالياً — اضغط زر التحديث", readSrc: "قراءة الخبر في المصدر", internal: "الشبكة الداخلية", offline: "غير متصل",
+          noNews: "لا توجد أخبار حالياً — اضغط زر التحديث", readSrc: "قراءة الخبر في المصدر", source: "المصدر:", like: "إعجاب", internal: "الشبكة الداخلية", offline: "غير متصل",
           failed: "تعذّر الاتصال — تُعرض آخر أخبار محفوظة", newBreaking: "أخبار عاجلة جديدة: ", updated: "تم التحديث", sign: "— مبين نيوز", langBtn: "فا" },
     fa: { breaking: "فوری", news: "اخبار", allday: "پخش شبانه‌روزی", radio: "رادیو", quran: "قرآن کریم", quranTab: "قرآن کریم",
           quranRadio: "رادیو قرآن", quranSub: "تلاوت زنده به‌صورت شبانه‌روزی", liveBadge: "زنده", live: "پخش زنده",
@@ -69,7 +69,7 @@
           alalamShort: "العالم", alalam: "شبکه العالم", alalamSub: "خبری • پخش زنده", kawtharShort: "الکوثر", kawthar: "شبکه الکوثر",
           kawtharSub: "عمومی • پخش زنده", reels: "ریلز", reelsLoading: "در حال بارگذاری ویدیوها…", reelsEmpty: "فعلاً ویدیویی نیست",
           back: "→ بازگشت", share: "اشتراک", tickerLoading: "در حال بارگذاری اخبار فوری…", noBreaking: "هنوز خبر فوری‌ای نیست",
-          noNews: "فعلاً خبری نیست — دکمه به‌روزرسانی را بزنید", readSrc: "خواندن خبر در منبع", internal: "شبکه داخلی", offline: "آفلاین",
+          noNews: "فعلاً خبری نیست — دکمه به‌روزرسانی را بزنید", readSrc: "خواندن خبر در منبع", source: "منبع:", like: "پسندیدن", internal: "شبکه داخلی", offline: "آفلاین",
           failed: "اتصال برقرار نشد — آخرین اخبار ذخیره‌شده نمایش داده می‌شود", newBreaking: "اخبار فوری جدید: ", updated: "به‌روز شد", sign: "— مبین نیوز", langBtn: "ع" }
   }[LANG];
   function applyLang() {
@@ -276,6 +276,37 @@
     return added;
   }
 
+  // ---------- likes & share ----------
+  var likes = load("mbn_likes", {});
+  function actions(key) {
+    var on = !!likes[key];
+    return '<div class="acts"><span class="act like' + (on ? " on" : "") + '" data-like="' + esc(key) + '">' + (on ? "♥" : "♡") + " " + T.like + '</span>' +
+      '<span class="act share" data-share="' + esc(key) + '">⤴ ' + T.share + '</span></div>';
+  }
+  function findItem(key) {
+    for (var i = 0; i < news.length; i++) if (news[i].key === key) return news[i];
+    for (var j = 0; j < breaking.length; j++) if (breaking[j].key === key) return breaking[j];
+    return null;
+  }
+  function shareItem(it) {
+    if (!it) return;
+    var text = it.title + (it.summary && it.summary !== it.title ? "\n\n" + it.summary.slice(0, 300) : "") + "\n" + T.sign;
+    if (window.Android && Android.share) Android.share(text);
+    else if (navigator.share) navigator.share({ text: text }).catch(function () {});
+  }
+  function toggleLike(key) {
+    if (likes[key]) delete likes[key]; else likes[key] = Date.now();
+    save("mbn_likes", likes);
+    Array.prototype.forEach.call(document.querySelectorAll('[data-like]'), function (el) {
+      if (el.getAttribute("data-like") !== key) return;
+      var on = !!likes[key]; el.classList.toggle("on", on); el.textContent = (on ? "♥" : "♡") + " " + T.like;
+    });
+  }
+  document.addEventListener("click", function (e) {
+    var l = e.target.closest("[data-like]"); if (l) { e.stopPropagation(); e.preventDefault(); toggleLike(l.getAttribute("data-like")); return; }
+    var sh = e.target.closest("[data-share]"); if (sh) { e.stopPropagation(); e.preventDefault(); shareItem(findItem(sh.getAttribute("data-share"))); }
+  }, true);
+
   // ---------- render ----------
   function renderTicker() {
     var track = $("tickerTrack"), win = $("tickerWindow");
@@ -305,7 +336,7 @@
     ol.innerHTML = breaking.map(function (b, i) {
       return '<li data-i="' + i + '"' + (b.fresh && now - b.fresh < 4000 ? ' class="new"' : "") + '>' +
         '<div class="t">' + esc(b.title) + "</div>" +
-        '<div class="meta"><span class="src">' + esc(SRC_NAME[b.src] || b.src) + "</span><span>" + clock(b.ts) + "</span><span>" + ago(b.ts) + "</span></div></li>";
+        '<div class="meta"><span class="src">' + esc(SRC_NAME[b.src] || b.src) + "</span><span>" + clock(b.ts) + "</span><span>" + ago(b.ts) + "</span></div>" + actions(b.key) + "</li>";
     }).join("");
   }
 
@@ -330,9 +361,9 @@
     box.innerHTML = list.slice(0, 120).map(function (n, i) {
       var img = n.img ? '<div class="img" style="background-image:url(\'' + esc(n.img).replace(/'/g, "%27") + '\')"></div>'
                       : '<div class="img ph"><svg><use href="#flame"/></svg></div>';
-      return '<button class="card' + (i === 0 && n.img ? " lead" : "") + '" data-key="' + esc(n.key) + '">' + img +
+      return '<div class="card' + (i === 0 && n.img ? " lead" : "") + '" role="button" data-key="' + esc(n.key) + '">' + img +
         '<div class="body"><div class="title">' + esc(n.title) + "</div>" +
-        '<div class="meta"><span class="src">' + esc(SRC_NAME[n.src] || n.src) + "</span><span>" + ago(n.ts) + "</span></div></div></button>";
+        '<div class="meta"><span class="src">' + esc(SRC_NAME[n.src] || n.src) + "</span><span>" + ago(n.ts) + "</span></div>" + actions(n.key) + "</div></div>";
     }).join("");
   }
 
@@ -348,7 +379,7 @@
       '<div class="inner"><h2>' + esc(item.title) + "</h2>" +
       '<div class="meta"><span class="src">' + esc(SRC_NAME[item.src] || item.src) + "</span><span>" + clock(item.ts) + "</span><span>" + ago(item.ts) + "</span></div>" +
       '<div class="txt" style="margin-top:12px">' + paras.map(function (p) { return "<p>" + esc(p) + "</p>"; }).join("") + "</div>" +
-      (item.url ? '<button class="open-src" id="openSrc">' + T.readSrc + '</button>' : "") + "</div>";
+      '<div class="src-line">' + T.source + ' ' + esc(SRC_NAME[item.src] || item.src) + '</div>' + actions(item.key) + "</div>";
     $("detail").hidden = false;
     $("detail").scrollTop = 0;
     var os = $("openSrc");
@@ -427,13 +458,13 @@
   }
 
   // ---------- reels ----------
-  var reels = load("mbn_reels", []), reelsLoaded = false, reelObs = null;
+  var reels = load("mbn_reels", []), reelsLoaded = false, reelObs = null, reelSound = !!load("mbn_reel_sound", false);
   function renderReels() {
     var box = $("reelsBox");
     if (!reels.length) { box.innerHTML = '<div class="empty">' + T.reelsEmpty + '</div>'; return; }
     box.innerHTML = reels.map(function (r, i) {
-      return '<div class="reel" data-i="' + i + '"><video playsinline loop muted preload="' + (i < 2 ? "auto" : "none") + '" poster="' + esc(r.poster || "") + '" data-src="' + esc(r.video) + '"></video>' +
-        '<span class="reel-mute">🔇</span><span class="reel-count">' + (i + 1) + " / " + reels.length + "</span>" +
+      return '<div class="reel" data-i="' + i + '"><video playsinline loop' + (reelSound ? "" : " muted") + ' preload="' + (i < 2 ? "auto" : "none") + '" poster="' + esc(r.poster || "") + '" data-src="' + esc(r.video) + '"></video>' +
+        '<span class="reel-mute">' + (reelSound ? "🔊" : "🔇") + '</span><span class="reel-count">' + (i + 1) + " / " + reels.length + "</span>" +
         (r.text ? '<div class="reel-cap">' + esc(r.text) + "</div>" : "") + "</div>";
     }).join("");
     if (reelObs) reelObs.disconnect();
@@ -442,7 +473,9 @@
         var v = en.target.querySelector("video");
         if (en.isIntersecting && en.intersectionRatio > 0.6) {
           if (!v.src) v.src = v.getAttribute("data-src");
-          var p = v.play(); if (p && p.catch) p.catch(function () {});
+          v.muted = !reelSound;
+          en.target.querySelector(".reel-mute").textContent = reelSound ? "🔊" : "🔇";
+          var p = v.play(); if (p && p.catch) p.catch(function () { v.muted = true; v.play(); });
           var nx = en.target.nextElementSibling; if (nx) { var nv = nx.querySelector("video"); if (nv && !nv.src) { nv.src = nv.getAttribute("data-src"); nv.preload = "auto"; } }
         } else { v.pause(); }
       });
@@ -468,8 +501,12 @@
   }
   $("reelsBox").addEventListener("click", function (e) {
     var el = e.target.closest(".reel"); if (!el) return;
-    var v = el.querySelector("video"); v.muted = !v.muted;
-    el.querySelector(".reel-mute").textContent = v.muted ? "🔇" : "🔊";
+    var v = el.querySelector("video");
+    reelSound = v.muted; save("mbn_reel_sound", reelSound);
+    Array.prototype.forEach.call(document.querySelectorAll("#reelsBox .reel"), function (r) {
+      r.querySelector("video").muted = !reelSound;
+      r.querySelector(".reel-mute").textContent = reelSound ? "🔊" : "🔇";
+    });
     if (v.paused) { var p = v.play(); if (p && p.catch) p.catch(function () {}); }
   });
 
