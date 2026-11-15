@@ -139,7 +139,7 @@ main { padding-bottom: calc(var(--nav-h) + 16px); }
 
 /* bottom nav */
 .tabs { position: fixed; bottom: 0; left: 0; right: 0; z-index: 30; height: var(--nav-h); display: flex; background: #111; border-top: 1px solid var(--line); padding-bottom: env(safe-area-inset-bottom); }
-.tab { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 2px; font-size: 12px; font-weight: 800; color: #8a8a8a; }
+.tab { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 2px; font-size: 11px; font-weight: 800; color: #8a8a8a; }
 .tab svg { width: 24px; height: 24px; }
 .tab.active { color: var(--orange); }
 
@@ -156,3 +156,16 @@ main { padding-bottom: calc(var(--nav-h) + 16px); }
 .open-src { display: block; width: 100%; margin-top: 16px; padding: 12px; border-radius: 10px; background: var(--orange); color: #0b0b0b; font-weight: 900; font-size: 16px; text-align: center; }
 
 .toast { position: fixed; bottom: calc(var(--nav-h) + 14px); left: 50%; transform: translateX(-50%); z-index: 60; background: #222; color: #fff; border: 1px solid var(--orange-d); padding: 8px 16px; border-radius: 20px; font-size: 13px; font-weight: 700; white-space: nowrap; }
+
+/* reels */
+#view-reels { padding: 0; }
+body.reels-mode .ticker { display: none; }
+.reels { height: calc(100vh - 61px - var(--nav-h)); overflow-y: scroll; scroll-snap-type: y mandatory; background: #000; }
+.reels .empty { color: #aaa; text-align: center; padding: 60px 20px; }
+.reel { position: relative; height: calc(100vh - 61px - var(--nav-h)); scroll-snap-align: start; scroll-snap-stop: always; display: grid; place-items: center; background: #000; overflow: hidden; }
+.reel video { width: 100%; height: 100%; object-fit: contain; background: #000; }
+.reel-mute { position: absolute; top: 12px; left: 12px; width: 40px; height: 40px; border-radius: 50%; background: rgba(0,0,0,.55); display: grid; place-items: center; font-size: 18px; }
+.reel-count { position: absolute; top: 18px; right: 12px; font-size: 12px; font-weight: 800; color: #fff; background: rgba(0,0,0,.55); padding: 3px 10px; border-radius: 20px; }
+.reel-cap { position: absolute; bottom: 0; left: 0; right: 0; padding: 40px 16px 16px; color: #fff; font-weight: 700; font-size: 15px; line-height: 1.6; background: linear-gradient(transparent, rgba(0,0,0,.85)); }
+
+.lang-btn { font-weight: 900; font-size: 15px; margin-inline-start: 6px; }

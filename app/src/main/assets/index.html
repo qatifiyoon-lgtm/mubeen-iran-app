@@ -23,6 +23,7 @@
     <symbol id="i-news" viewBox="0 0 64 64"><g fill="none" stroke="currentColor" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"><path d="M12 12h34v40H16a4 4 0 0 1-4-4z"/><path d="M46 22h6v26a4 4 0 0 1-4 4h-2"/><path d="M19 20h20"/><path d="M19 28h8v8h-8z"/><path d="M32 29h7"/><path d="M32 35h7"/><path d="M19 43h20"/></g></symbol>
     <symbol id="i-quran" viewBox="0 0 64 64"><g fill="none" stroke="currentColor" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"><path d="M32 26c-6-4-14-5-22-4v26c8-1 16 0 22 4"/><path d="M32 26c6-4 14-5 22-4v26c-8-1-16 0-22 4"/><path d="M32 26v26"/><path d="M26 12a8 8 0 0 1 12 0"/><path d="M21 7a15 15 0 0 1 22 0"/></g></symbol>
     <symbol id="i-live" viewBox="0 0 64 64"><g fill="none" stroke="currentColor" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"><path d="M8 16h48v32H8z"/><path d="M22 56h20"/><path d="M32 48v8"/><path d="M27 25v14l12-7z" fill="currentColor"/><path d="M24 6l8 8 8-8"/></g></symbol>
+    <symbol id="i-reels" viewBox="0 0 64 64"><g fill="none" stroke="currentColor" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"><rect x="16" y="6" width="32" height="52" rx="6"/><path d="M28 24v16l13-8z" fill="currentColor"/></g></symbol>
     <symbol id="i-play" viewBox="0 0 24 24"><path d="M8 5v14l11-7z" fill="currentColor"/></symbol>
     <symbol id="i-refresh" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M20 11a8 8 0 1 0-2.3 5.7"/><path d="M20 4v7h-7"/></g></symbol>
   </defs>
@@ -38,12 +39,13 @@
   </div>
   <div class="top-left">
     <span id="netBadge" class="net" hidden></span>
+    <button id="langBtn" class="icon-btn lang-btn" aria-label="اللغة">فا</button>
     <button id="refreshBtn" class="icon-btn" aria-label="تحديث"><svg><use href="#i-refresh"/></svg></button>
   </div>
 </header>
 
 <div class="ticker" id="ticker">
-  <div class="ticker-label"><span class="dot"></span>عاجل</div>
+  <div class="ticker-label"><span class="dot"></span><span data-i18n="breaking">عاجل</span></div>
   <div class="ticker-window" id="tickerWindow"><div class="ticker-track" id="tickerTrack"></div></div>
 </div>
 
@@ -51,7 +53,7 @@
   <section class="view active" id="view-breaking">
     <div class="banner">
       <div class="banner-text">
-        <h1>عاجل</h1>
+        <h1 data-i18n="breaking">عاجل</h1>
       </div>
       <span class="shine"></span><div class="lines"><i></i><i></i><i></i></div><div class="banner-art"><span class="ring r1"></span><span class="ring r2"></span><div class="circle"><svg><use href="#i-siren"/></svg></div></div>
     </div>
@@ -61,7 +63,7 @@
   <section class="view" id="view-news">
     <div class="banner">
       <div class="banner-text">
-        <h1>الأخبار</h1>
+        <h1 data-i18n="news">الأخبار</h1>
       </div>
       <span class="shine"></span><div class="lines"><i></i><i></i><i></i></div><div class="banner-art"><span class="ring r1"></span><span class="ring r2"></span><div class="circle"><svg><use href="#i-news"/></svg></div></div>
     </div>
@@ -72,16 +74,16 @@
   <section class="view" id="view-quran">
     <div class="banner">
       <div class="banner-text">
-        <span class="pill"><i></i>بث على مدار الساعة</span>
-        <p class="pre">إذاعة</p>
-        <h1 class="amiri">القرآن الكريم</h1>
+        <span class="pill"><i></i><span data-i18n="allday">بث على مدار الساعة</span></span>
+        <p class="pre" data-i18n="radio">إذاعة</p>
+        <h1 class="amiri" data-i18n="quran">القرآن الكريم</h1>
       </div>
       <span class="shine"></span><div class="lines"><i></i><i></i><i></i></div><div class="banner-art"><span class="ring r1"></span><span class="ring r2"></span><div class="circle"><svg><use href="#i-quran"/></svg></div></div>
     </div>
     <div class="stream-card big" data-stream="quran">
       <div class="stream-info">
-        <b class="amiri">إذاعة القرآن الكريم</b>
-        <span>تلاوات مباشرة على مدار الساعة</span>
+        <b class="amiri" data-i18n="quranRadio">إذاعة القرآن الكريم</b>
+        <span data-i18n="quranSub">تلاوات مباشرة على مدار الساعة</span>
       </div>
       <button class="play-btn" aria-label="تشغيل"><svg><use href="#i-play"/></svg></button>
     </div>
@@ -90,36 +92,61 @@
   <section class="view" id="view-live">
     <div class="banner">
       <div class="banner-text">
-        <span class="pill red"><i></i>مباشر</span>
-        <h1 class="long">البث المباشر</h1>
-        <p>قناة العالم • قناة الكوثر</p>
+        <span class="pill red"><i></i><span data-i18n="liveBadge">مباشر</span></span>
+        <h1 class="long" data-i18n="live">البث المباشر</h1>
+        <p data-i18n="liveSub">مبين نيوز • العالم • الخبر • آي فيلم</p>
       </div>
       <span class="shine"></span><div class="lines"><i></i><i></i><i></i></div><div class="banner-art"><span class="ring r1"></span><span class="ring r2"></span><div class="circle"><svg><use href="#i-live"/></svg></div></div>
     </div>
+    <div class="stream-card" data-stream="mubeen">
+      <div class="stream-logo" data-i18n="mubeenShort">مبين</div>
+      <div class="stream-info"><b data-i18n="mubeen">مبين نيوز</b><span data-i18n="mubeenSub">بث مباشر على مدار الساعة</span></div>
+      <button class="play-btn" aria-label="تشغيل"><svg><use href="#i-play"/></svg></button>
+    </div>
     <div class="stream-card" data-stream="alalam">
-      <div class="stream-logo">العالم</div>
-      <div class="stream-info"><b>قناة العالم</b><span>إخبارية • بث مباشر</span></div>
+      <div class="stream-logo" data-i18n="alalamShort">العالم</div>
+      <div class="stream-info"><b data-i18n="alalam">قناة العالم</b><span data-i18n="alalamSub">إخبارية • بث مباشر</span></div>
+      <button class="play-btn" aria-label="تشغيل"><svg><use href="#i-play"/></svg></button>
+    </div>
+    <div class="stream-card" data-stream="irinn">
+      <div class="stream-logo" data-i18n="irinnShort">خبر</div>
+      <div class="stream-info"><b data-i18n="irinn">قناة الخبر الإيرانية</b><span data-i18n="irinnSub">إخبارية • بث مباشر</span></div>
+      <button class="play-btn" aria-label="تشغيل"><svg><use href="#i-play"/></svg></button>
+    </div>
+    <div class="stream-card" data-stream="presstv">
+      <div class="stream-logo" data-i18n="presstvShort">Press TV</div>
+      <div class="stream-info"><b data-i18n="presstv">برس تي في</b><span data-i18n="presstvSub">إخبارية بالإنجليزية • بث مباشر</span></div>
+      <button class="play-btn" aria-label="تشغيل"><svg><use href="#i-play"/></svg></button>
+    </div>
+    <div class="stream-card" data-stream="ifilm">
+      <div class="stream-logo" data-i18n="ifilmShort">iFilm</div>
+      <div class="stream-info"><b data-i18n="ifilm">آي فيلم</b><span data-i18n="ifilmSub">أفلام ومسلسلات • بث مباشر</span></div>
       <button class="play-btn" aria-label="تشغيل"><svg><use href="#i-play"/></svg></button>
     </div>
     <div class="stream-card" data-stream="kawthar">
-      <div class="stream-logo">الكوثر</div>
-      <div class="stream-info"><b>قناة الكوثر</b><span>منوعة • بث مباشر</span></div>
+      <div class="stream-logo" data-i18n="kawtharShort">الكوثر</div>
+      <div class="stream-info"><b data-i18n="kawthar">قناة الكوثر</b><span data-i18n="kawtharSub">منوعة • بث مباشر</span></div>
       <button class="play-btn" aria-label="تشغيل"><svg><use href="#i-play"/></svg></button>
     </div>
+  </section>
+
+  <section class="view" id="view-reels">
+    <div class="reels" id="reelsBox"><div class="empty" data-i18n="reelsLoading">جارٍ تحميل المقاطع…</div></div>
   </section>
 </main>
 
 <nav class="tabs">
-  <button class="tab active" data-view="breaking"><svg><use href="#i-siren"/></svg>عاجل</button>
-  <button class="tab" data-view="news"><svg><use href="#i-news"/></svg>الأخبار</button>
-  <button class="tab" data-view="quran"><svg><use href="#i-quran"/></svg>القرآن الكريم</button>
-  <button class="tab" data-view="live"><svg><use href="#i-live"/></svg>البث المباشر</button>
+  <button class="tab active" data-view="breaking"><svg><use href="#i-siren"/></svg><span data-i18n="breaking">عاجل</span></button>
+  <button class="tab" data-view="news"><svg><use href="#i-news"/></svg><span data-i18n="news">الأخبار</span></button>
+  <button class="tab" data-view="quran"><svg><use href="#i-quran"/></svg><span data-i18n="quranTab">القرآن الكريم</span></button>
+  <button class="tab" data-view="reels"><svg><use href="#i-reels"/></svg><span data-i18n="reels">ريلز</span></button>
+  <button class="tab" data-view="live"><svg><use href="#i-live"/></svg><span data-i18n="live">البث المباشر</span></button>
 </nav>
 
 <div class="detail" id="detail" hidden>
   <div class="detail-bar">
-    <button class="back" id="detailBack">→ رجوع</button>
-    <button class="ghost" id="detailShare">مشاركة</button>
+    <button class="back" id="detailBack" data-i18n="back">→ رجوع</button>
+    <button class="ghost" id="detailShare" data-i18n="share">مشاركة</button>
   </div>
   <article class="detail-body" id="detailBody"></article>
 </div>
