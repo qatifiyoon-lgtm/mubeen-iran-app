@@ -20,7 +20,8 @@
       { id: "mehr",   type: "rss", url: "https://ar.mehrnews.com/rss" },
       { id: "irna",   type: "rss", url: "https://ar.irna.ir/rss" },
       { id: "tasnim", type: "rss", url: "https://www.tasnimnews.ir/ar/rss/feed/0/0/8/1/TopStories" },
-      { id: "iranar", type: "tg",  url: "https://t.me/s/iraninarabic_ir", external: true }
+      { id: "iranar", type: "tg",  url: "https://t.me/s/iraninarabic_ir", external: true },
+      { id: "srv",    type: "srv", url: "http://45.89.237.183/news/news-ar.json" }
     ],
     fa: [
       { id: "mubeen", type: "rss", url: "https://mubeennews.com/fa/feed/", external: true },
@@ -28,7 +29,8 @@
       { id: "irna",   type: "rss", url: "https://www.irna.ir/rss" },
       { id: "tasnim", type: "rss", url: "https://www.tasnimnews.ir/fa/rss/feed/0/0/8/1/TopStories" },
       { id: "isna",   type: "rss", url: "https://www.isna.ir/rss" },
-      { id: "mashregh", type: "rss", url: "https://www.mashreghnews.ir/rss" }
+      { id: "mashregh", type: "rss", url: "https://www.mashreghnews.ir/rss" },
+      { id: "srv",    type: "srv", url: "http://45.89.237.183/news/news-fa.json" }
     ]
   };
   var SOURCES = SOURCES_BY_LANG[LANG];
@@ -258,6 +260,16 @@
     return out;
   }
 
+  // news collected on the Iranian server (mubeen + Telegram via the phone tunnel) — works during shutdown
+  function parseSrv(body) {
+    var d = JSON.parse(body), arr = (d && d.items) || [];
+    return arr.map(function (n) {
+      var title = cleanTitle(n.title);
+      return { key: normKey(title), src: n.src, title: title, summary: n.summary || "", html: n.html || "",
+               img: n.img || "", url: n.url || "", ts: parseTs(n.ts) };
+    }).filter(function (x) { return x.title && !(LANG === "fa" && x.src === "iranar"); });
+  }
+
   // ---------- breaking store ----------
   function addBreaking(list) {
     var added = 0;
@@ -403,12 +415,12 @@
 
     var jobs = SOURCES.map(function (src) {
       return get(src.url).then(function (body) {
-        var items = src.type === "rss" ? parseRss(body, src) : src.type === "tg" ? parseTg(body, src) : parseWp(body, src);
+        var items = src.type === "rss" ? parseRss(body, src) : src.type === "tg" ? parseTg(body, src) : src.type === "srv" ? parseSrv(body) : parseWp(body, src);
         if (!items.length) return;
         if (src.external) mubeenOk = true; else iranOk = true;
         collected = collected.concat(items);
         if (!src.external || src.type === "tg") {
-          items.slice().sort(function (a, b) { return b.ts - a.ts; }).slice(0, PER_SOURCE_BREAKING)
+          items.filter(function (it) { return src.type !== "srv" || it.src === "iranar"; }).slice().sort(function (a, b) { return b.ts - a.ts; }).slice(0, PER_SOURCE_BREAKING)
             .forEach(function (it) { newBreaking.push(it); });
         }
       }).catch(function () {});
