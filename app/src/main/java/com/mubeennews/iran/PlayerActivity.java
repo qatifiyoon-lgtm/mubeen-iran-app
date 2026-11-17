@@ -8,6 +8,7 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
 import android.view.Gravity;
+import android.view.KeyEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
@@ -108,6 +109,14 @@ public class PlayerActivity extends Activity {
         root.addView(status, new FrameLayout.LayoutParams(
                 ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT, Gravity.BOTTOM));
 
+        if (MainActivity.isTv(this)) {
+            setRequestedOrientation(android.content.pm.ActivityInfo.SCREEN_ORIENTATION_SENSOR_LANDSCAPE);
+            top.setTextSize(22);
+            status.setTextSize(20);
+        }
+        view.setFocusable(true);
+        view.requestFocus();
+
         root.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -194,6 +203,19 @@ public class PlayerActivity extends Activity {
                 if (!isFinishing() && player != null) start();
             }
         }, 3000);
+    }
+
+    @Override
+    public boolean dispatchKeyEvent(KeyEvent e) {
+        int k = e.getKeyCode();
+        if (e.getAction() == KeyEvent.ACTION_DOWN && player != null && !player.isPlaying()
+                && status.getText().length() > 0 && retries > 5
+                && (k == KeyEvent.KEYCODE_DPAD_CENTER || k == KeyEvent.KEYCODE_ENTER)) {
+            retries = 0;
+            start();
+            return true;
+        }
+        return super.dispatchKeyEvent(e);
     }
 
     @Override

@@ -2,6 +2,10 @@ package com.mubeennews.iran;
 
 import android.annotation.SuppressLint;
 import android.app.Activity;
+import android.app.UiModeManager;
+import android.content.pm.ActivityInfo;
+import android.content.pm.PackageManager;
+import android.content.res.Configuration;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
@@ -33,12 +37,30 @@ public class MainActivity extends Activity {
     private WebView web;
     private final Handler ui = new Handler(Looper.getMainLooper());
     private final ExecutorService pool = Executors.newFixedThreadPool(6);
+    private boolean tv = false;
+
+    static boolean isTv(Context c) {
+        try {
+            UiModeManager m = (UiModeManager) c.getSystemService(Context.UI_MODE_SERVICE);
+            if (m != null && m.getCurrentModeType() == Configuration.UI_MODE_TYPE_TELEVISION) return true;
+            PackageManager pm = c.getPackageManager();
+            return pm.hasSystemFeature("android.software.leanback")
+                    || !pm.hasSystemFeature(PackageManager.FEATURE_TOUCHSCREEN);
+        } catch (Exception e) {
+            return false;
+        }
+    }
 
     @SuppressLint({"SetJavaScriptEnabled", "AddJavascriptInterface"})
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        tv = isTv(this);
+        setRequestedOrientation(tv ? ActivityInfo.SCREEN_ORIENTATION_SENSOR_LANDSCAPE
+                                   : ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
         web = new WebView(this);
+        web.setFocusable(true);
+        web.setFocusableInTouchMode(true);
         web.setBackgroundColor(Color.parseColor("#0B0B0B"));
         setContentView(web);
 
@@ -68,7 +90,8 @@ public class MainActivity extends Activity {
             }
         });
         web.addJavascriptInterface(new Bridge(), "Android");
-        web.loadUrl("file:///android_asset/index.html");
+        web.loadUrl("file:///android_asset/index.html" + (tv ? "?tv=1" : ""));
+        web.requestFocus();
     }
 
     @Override
@@ -165,6 +188,11 @@ public class MainActivity extends Activity {
             i.putExtra("title", title);
             i.putExtra("audio", audio);
             startActivity(i);
+        }
+
+        @JavascriptInterface
+        public boolean isTv() {
+            return tv;
         }
 
         @JavascriptInterface
