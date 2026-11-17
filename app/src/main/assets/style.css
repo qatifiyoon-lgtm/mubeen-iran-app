@@ -266,3 +266,15 @@ body.tv .toast { bottom: 24px; }
 body.tv .tab span { white-space: nowrap; }
 html.tv, body.tv { --nav-w: 196px; }
 body.tv .stream-logo { font-size: 15px; text-align: center; line-height: 1.1; }
+/* أسماء النسختين الأطول (شؤون إقليمية / شؤون سعودية): على الجوال يصير الزر صفاً كاملاً تحت الشعار */
+@media (max-width: 520px) {
+  .top { flex-wrap: wrap; row-gap: 8px; padding: 8px 12px; }
+  .top-left { display: contents; }
+  .brand { margin-inline-end: auto; }
+  .brand-text b { white-space: nowrap; }
+  .top-left > * { margin-inline-start: 8px; }
+  .ed-switch { order: 10; flex: 1 1 100%; margin: 0 !important; }
+  .ed { flex: 1; text-align: center; padding: 6px 8px; font-size: 14px; }
+}
+.reels, .reel { height: calc(100vh - var(--top-h, 61px) - var(--nav-h)); }
+body.tv .reels, body.tv .reel { height: calc(100vh - var(--top-h, 66px)); }
