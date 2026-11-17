@@ -9,10 +9,14 @@
     presstv: { url: "https://ncdn.telewebion.ir/presstv/live/playlist.m3u8",    title: "Press TV",              audio: false },
     ifilm:   { url: "https://ncdn.telewebion.ir/ifilm/live/playlist.m3u8",      title: "آي فيلم",               audio: false },
     kawthar: { url: "https://ncdn.telewebion.ir/kawthar/live/playlist.m3u8",    title: "قناة الكوثر",          audio: false },
-    quran:   { url: "https://ncdn.telewebion.ir/radioquran/live/playlist.m3u8", title: "إذاعة القرآن الكريم", audio: true }
+    quran:   { url: "https://ncdn.telewebion.ir/radioquran/live/playlist.m3u8", title: "إذاعة القرآن الكريم", audio: true },
+    // النسخة الداخلية: بث مبين نيوز نفسه الموجود على mubeennews.com/live
+    mubeenDom: { url: "https://stream.qatifiyoon.com/master.m3u8",               title: "مبين نيوز",            audio: false }
   };
 
   var LANG = (function () { try { return localStorage.getItem("mbn_lang") === "fa" ? "fa" : "ar"; } catch (e) { return "ar"; } })();
+  // النسخة: "ir" = إيراني (كما كانت) ، "dom" = داخلي (أخبار mubeennews.com). المستخدم يختار والتطبيق يتذكّر.
+  var ED = (function () { try { return localStorage.getItem("mbn_ed") === "dom" ? "dom" : "ir"; } catch (e) { return "ir"; } })();
 
   var SOURCES_BY_LANG = {
     ar: [
@@ -61,7 +65,9 @@
           kawtharSub: "منوعة • بث مباشر", reels: "ريلز", reelsLoading: "جارٍ تحميل المقاطع…", reelsEmpty: "لا توجد مقاطع حالياً",
           back: "→ رجوع", share: "مشاركة", tickerLoading: "جارٍ تحميل الأخبار العاجلة…", noBreaking: "لا توجد أخبار عاجلة بعد",
           noNews: "لا توجد أخبار حالياً — اضغط زر التحديث", readSrc: "قراءة الخبر في المصدر", source: "المصدر:", like: "إعجاب", internal: "الشبكة الداخلية", offline: "غير متصل",
-          failed: "تعذّر الاتصال — تُعرض آخر أخبار محفوظة", newBreaking: "أخبار عاجلة جديدة: ", updated: "تم التحديث", sign: "— مبين نيوز", langBtn: "فا" },
+          failed: "تعذّر الاتصال — تُعرض آخر أخبار محفوظة", newBreaking: "أخبار عاجلة جديدة: ", updated: "تم التحديث", sign: "— مبين نيوز", langBtn: "فا",
+          edIr: "إيراني", edDom: "داخلي", press: "صحافة", opp: "منبر المعارضة", oppTab: "المعارضة", pris: "معتقلو الرأي", prisTab: "معتقلو الرأي",
+          latest: "آخر الأخبار" },
     fa: { breaking: "فوری", news: "اخبار", allday: "پخش شبانه‌روزی", radio: "رادیو", quran: "قرآن کریم", quranTab: "قرآن کریم",
           quranRadio: "رادیو قرآن", quranSub: "تلاوت زنده به‌صورت شبانه‌روزی", liveBadge: "زنده", live: "پخش زنده",
           liveSub: "مبین نیوز • العالم • خبر • آی‌فیلم",
@@ -72,7 +78,9 @@
           kawtharSub: "عمومی • پخش زنده", reels: "ریلز", reelsLoading: "در حال بارگذاری ویدیوها…", reelsEmpty: "فعلاً ویدیویی نیست",
           back: "→ بازگشت", share: "اشتراک", tickerLoading: "در حال بارگذاری اخبار فوری…", noBreaking: "هنوز خبر فوری‌ای نیست",
           noNews: "فعلاً خبری نیست — دکمه به‌روزرسانی را بزنید", readSrc: "خواندن خبر در منبع", source: "منبع:", like: "پسندیدن", internal: "شبکه داخلی", offline: "آفلاین",
-          failed: "اتصال برقرار نشد — آخرین اخبار ذخیره‌شده نمایش داده می‌شود", newBreaking: "اخبار فوری جدید: ", updated: "به‌روز شد", sign: "— مبین نیوز", langBtn: "ع" }
+          failed: "اتصال برقرار نشد — آخرین اخبار ذخیره‌شده نمایش داده می‌شود", newBreaking: "اخبار فوری جدید: ", updated: "به‌روز شد", sign: "— مبین نیوز", langBtn: "ع",
+          edIr: "ایرانی", edDom: "داخلی", press: "مطبوعات", opp: "تریبون اپوزیسیون", oppTab: "اپوزیسیون", pris: "زندانیان عقیدتی", prisTab: "زندانیان",
+          latest: "آخرین اخبار" }
   }[LANG];
   function applyLang() {
     document.documentElement.lang = LANG;
@@ -81,6 +89,9 @@
     });
     document.getElementById("langBtn").textContent = T.langBtn;
     if (LANG === "fa") document.body.classList.add("lang-fa");
+    document.body.classList.add("ed-" + ED);
+    Array.prototype.forEach.call(document.querySelectorAll("#edSwitch .ed"), function (b) { b.classList.toggle("on", b.getAttribute("data-ed") === ED); });
+    if (ED === "dom") $("tickerLabel").textContent = T.latest;
   }
 
   // ---------- storage ----------
@@ -329,7 +340,7 @@
       return;
     }
     track.innerHTML = items.map(function (b) {
-      return '<span class="sep">' + T.breaking + '</span><span class="item">' + esc(b.title) + "</span>";
+      return '<span class="sep">' + (ED === "dom" ? "●" : T.breaking) + '</span><span class="item">' + esc(b.title) + "</span>";
     }).join("");
     track.classList.remove("run");
     void track.offsetWidth;
@@ -405,6 +416,7 @@
   // ---------- loading ----------
   var loading = false;
   function refresh(manual) {
+    if (ED === "dom") return refreshDom(manual);
     if (loading) return;
     loading = true;
     $("refreshBtn").classList.add("spin");
@@ -459,12 +471,82 @@
     });
   }
 
+  // ---------- النسخة الداخلية (mubeennews.com) ----------
+  var DOM_SECTIONS = [
+    { id: "dnews", cat: { ar: 12,  fa: 40  } },   // الأخبار
+    { id: "press", cat: { ar: 68,  fa: 73  } },   // صحافة
+    { id: "opp",   cat: { ar: 86,  fa: 91  } },   // منبر المعارضة
+    { id: "pris",  cat: { ar: 124, fa: 129 } }    // معتقلو الرأي
+  ];
+  var DOM_PER_SECTION = 40;
+  var domData = {};
+  DOM_SECTIONS.forEach(function (sec) { domData[sec.id] = load("mbn_dom_" + sec.id + "_" + LANG, []); });
+
+  function domAll() {
+    var all = [];
+    DOM_SECTIONS.forEach(function (sec) { all = all.concat(domData[sec.id]); });
+    return all.sort(function (a, b) { return b.ts - a.ts; });
+  }
+  function syncDom() {
+    news = domAll();                       // للمشاركة وفتح الخبر
+    breaking = news.slice(0, TICKER_MAX);  // شريط «آخر الأخبار»
+  }
+  function renderDomList(secId) {
+    var box = $("list-" + secId), list = domData[secId];
+    if (!list.length) {
+      box.innerHTML = loading ? '<div class="skeleton"></div><div class="skeleton"></div><div class="skeleton"></div>' : '<div class="empty">' + T.noNews + '</div>';
+      return;
+    }
+    box.innerHTML = list.map(function (n, i) {
+      var img = n.img ? '<div class="img" style="background-image:url(\'' + esc(n.img).replace(/'/g, "%27") + '\')"></div>'
+                      : '<div class="img ph"><svg><use href="#flame"/></svg></div>';
+      return '<div class="card' + (i === 0 && n.img ? " lead" : "") + '" role="button" data-key="' + esc(n.key) + '">' + img +
+        '<div class="body"><div class="title">' + esc(n.title) + "</div>" +
+        '<div class="meta"><span>' + ago(n.ts) + "</span></div>" + actions(n.key) + "</div></div>";
+    }).join("");
+  }
+  function renderDom() {
+    syncDom();
+    renderTicker();
+    DOM_SECTIONS.forEach(function (sec) { renderDomList(sec.id); });
+  }
+  function refreshDom(manual) {
+    if (loading) return;
+    loading = true;
+    $("refreshBtn").classList.add("spin");
+    var okAny = false;
+    var jobs = DOM_SECTIONS.map(function (sec) {
+      var url = "https://mubeennews.com/wp-json/wp/v2/posts?categories=" + sec.cat[LANG] + "&per_page=" + DOM_PER_SECTION + "&_embed=1";
+      return get(url).then(function (body) {
+        var items = parseWp(body, { id: "mubeen" });
+        if (!items.length) return;
+        okAny = true;
+        items.forEach(function (it) { it.key = sec.id + ":" + it.key; it.sec = sec.id; });
+        domData[sec.id] = items.sort(function (a, b) { return b.ts - a.ts; }).slice(0, DOM_PER_SECTION);
+        save("mbn_dom_" + sec.id + "_" + LANG, domData[sec.id]);
+      }).catch(function () {});
+    });
+    Promise.all(jobs).then(function () {
+      loading = false;
+      $("refreshBtn").classList.remove("spin");
+      renderDom();
+      if (manual) toast(okAny ? T.updated : T.failed);
+    });
+  }
+  Array.prototype.forEach.call(document.querySelectorAll(".dom-list"), function (box) {
+    box.addEventListener("click", function (e) {
+      var c = e.target.closest(".card"); if (!c) return;
+      var it = findItem(c.getAttribute("data-key")); if (it) openDetail(it);
+    });
+  });
+  var HOME = ED === "dom" ? "dnews" : "breaking";
+
   // ---------- events ----------
   function showView(name) {
     Array.prototype.forEach.call(document.querySelectorAll(".view"), function (v) { v.classList.toggle("active", v.id === "view-" + name); });
     Array.prototype.forEach.call(document.querySelectorAll(".tab"), function (t) { t.classList.toggle("active", t.getAttribute("data-view") === name); });
     window.scrollTo(0, 0);
-    save("mbn_tab", name);
+    save("mbn_tab_" + ED, name);
     document.body.classList.toggle("reels-mode", name === "reels");
     if (name === "reels") loadReels(); else pauseReels();
   }
@@ -542,10 +624,19 @@
     for (var i = 0; i < news.length; i++) if (news[i].key === b.key) { full = news[i]; break; }
     openDetail(full || b);
   });
-  $("tickerWindow").addEventListener("click", function () { showView("breaking"); });
+  $("tickerWindow").addEventListener("click", function () {
+    if (ED === "dom") { if (breaking[0]) openDetail(breaking[0]); return; }
+    showView("breaking");
+  });
   $("refreshBtn").addEventListener("click", function () { refresh(true); });
   $("langBtn").addEventListener("click", function () {
     try { localStorage.setItem("mbn_lang", LANG === "fa" ? "ar" : "fa"); } catch (e) {}
+    location.reload();
+  });
+  $("edSwitch").addEventListener("click", function (e) {
+    var b = e.target.closest(".ed"); if (!b) return;
+    var ed = b.getAttribute("data-ed"); if (ed === ED) return;
+    try { localStorage.setItem("mbn_ed", ed); } catch (err) {}
     location.reload();
   });
   $("detailBack").addEventListener("click", closeDetail);
@@ -557,7 +648,7 @@
   Array.prototype.forEach.call(document.querySelectorAll(".stream-card"), function (card) {
     card.addEventListener("click", function () {
       var id = card.getAttribute("data-stream"), s = STREAMS[id];
-      var title = { mubeen: T.mubeen, alalam: T.alalam, kawthar: T.kawthar, irinn: T.irinn, presstv: T.presstv, ifilm: T.ifilm, quran: T.quranRadio }[id] || s.title;
+      var title = { mubeen: T.mubeen, mubeenDom: T.mubeen, alalam: T.alalam, kawthar: T.kawthar, irinn: T.irinn, presstv: T.presstv, ifilm: T.ifilm, quran: T.quranRadio }[id] || s.title;
       if (window.Android && Android.play) Android.play(s.url, title, s.audio);
       else window.open(s.url, "_blank");
     });
@@ -565,7 +656,7 @@
 
   window.onBack = function () {
     if (!$("detail").hidden) { closeDetail(); return true; }
-    if (!document.getElementById("view-breaking").classList.contains("active")) { showView("breaking"); return true; }
+    if (!document.getElementById("view-" + HOME).classList.contains("active")) { showView(HOME); return true; }
     return false;
   };
 
@@ -578,10 +669,12 @@
   // ---------- start ----------
   applyLang();
   layout();
-  showView(load("mbn_tab", "breaking"));
-  renderTicker(); renderBreaking(); renderNews();
+  var lastTab = load("mbn_tab_" + ED, ED === "ir" ? load("mbn_tab", HOME) : HOME);
+  if (!document.getElementById("view-" + lastTab) || !document.querySelector('.tab.' + ED + '[data-view="' + lastTab + '"]')) lastTab = HOME;
+  showView(lastTab);
+  if (ED === "dom") renderDom(); else { renderTicker(); renderBreaking(); renderNews(); }
   refresh(false);
   setInterval(function () { refresh(false); }, REFRESH_MS);
-  setInterval(function () { renderBreaking(); }, 60000);
+  setInterval(function () { if (ED === "dom") renderDom(); else renderBreaking(); }, 60000);
   document.addEventListener("visibilitychange", function () { if (!document.hidden) refresh(false); });
 })();

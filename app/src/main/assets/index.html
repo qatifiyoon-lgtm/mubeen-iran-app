@@ -24,6 +24,9 @@
     <symbol id="i-quran" viewBox="0 0 64 64"><g fill="none" stroke="currentColor" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"><path d="M32 26c-6-4-14-5-22-4v26c8-1 16 0 22 4"/><path d="M32 26c6-4 14-5 22-4v26c-8-1-16 0-22 4"/><path d="M32 26v26"/><path d="M26 12a8 8 0 0 1 12 0"/><path d="M21 7a15 15 0 0 1 22 0"/></g></symbol>
     <symbol id="i-live" viewBox="0 0 64 64"><g fill="none" stroke="currentColor" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"><path d="M8 16h48v32H8z"/><path d="M22 56h20"/><path d="M32 48v8"/><path d="M27 25v14l12-7z" fill="currentColor"/><path d="M24 6l8 8 8-8"/></g></symbol>
     <symbol id="i-reels" viewBox="0 0 64 64"><g fill="none" stroke="currentColor" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"><rect x="16" y="6" width="32" height="52" rx="6"/><path d="M28 24v16l13-8z" fill="currentColor"/></g></symbol>
+    <symbol id="i-press" viewBox="0 0 64 64"><g fill="none" stroke="currentColor" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"><path d="M10 14h44v36a4 4 0 0 1-4 4H14a4 4 0 0 1-4-4z"/><path d="M10 24h44"/><path d="M18 32h12v12H18z"/><path d="M36 33h10"/><path d="M36 40h10"/><path d="M18 18h4"/></g></symbol>
+    <symbol id="i-mega" viewBox="0 0 64 64"><g fill="none" stroke="currentColor" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"><path d="M10 26v12h10l20 12V14L20 26z"/><path d="M20 38l4 14h6l-3-12"/><path d="M48 24a10 10 0 0 1 0 16"/><path d="M53 18a18 18 0 0 1 0 28"/></g></symbol>
+    <symbol id="i-chain" viewBox="0 0 64 64"><g fill="none" stroke="currentColor" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"><path d="M14 10v44"/><path d="M26 10v44"/><path d="M38 10v44"/><path d="M50 10v44"/><path d="M8 10h48"/><path d="M8 54h48"/></g></symbol>
     <symbol id="i-play" viewBox="0 0 24 24"><path d="M8 5v14l11-7z" fill="currentColor"/></symbol>
     <symbol id="i-refresh" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M20 11a8 8 0 1 0-2.3 5.7"/><path d="M20 4v7h-7"/></g></symbol>
   </defs>
@@ -38,6 +41,10 @@
     </div>
   </div>
   <div class="top-left">
+    <div class="ed-switch" id="edSwitch" role="tablist">
+      <button class="ed" data-ed="ir" data-i18n="edIr">إيراني</button>
+      <button class="ed" data-ed="dom" data-i18n="edDom">داخلي</button>
+    </div>
     <span id="netBadge" class="net" hidden></span>
     <button id="langBtn" class="icon-btn lang-btn" aria-label="اللغة">فا</button>
     <button id="refreshBtn" class="icon-btn" aria-label="تحديث"><svg><use href="#i-refresh"/></svg></button>
@@ -45,7 +52,7 @@
 </header>
 
 <div class="ticker" id="ticker">
-  <div class="ticker-label"><span class="dot"></span><span data-i18n="breaking">عاجل</span></div>
+  <div class="ticker-label"><span class="dot"></span><span id="tickerLabel" data-i18n="breaking">عاجل</span></div>
   <div class="ticker-window" id="tickerWindow"><div class="ticker-track" id="tickerTrack"></div></div>
 </div>
 
@@ -133,14 +140,72 @@
   <section class="view" id="view-reels">
     <div class="reels" id="reelsBox"><div class="empty" data-i18n="reelsLoading">جارٍ تحميل المقاطع…</div></div>
   </section>
+
+  <!-- ===== النسخة الداخلية (من mubeennews.com) ===== -->
+  <section class="view" id="view-dnews">
+    <div class="banner">
+      <div class="banner-text">
+        <h1 data-i18n="news"></h1>
+      </div>
+      <span class="shine"></span><div class="lines"><i></i><i></i><i></i></div><div class="banner-art"><span class="ring r1"></span><span class="ring r2"></span><div class="circle"><svg><use href="#i-news"/></svg></div></div>
+    </div>
+    <div class="news-list dom-list" id="list-dnews" data-sec="dnews"></div>
+  </section>
+  <section class="view" id="view-press">
+    <div class="banner">
+      <div class="banner-text">
+        <h1 data-i18n="press"></h1>
+      </div>
+      <span class="shine"></span><div class="lines"><i></i><i></i><i></i></div><div class="banner-art"><span class="ring r1"></span><span class="ring r2"></span><div class="circle"><svg><use href="#i-press"/></svg></div></div>
+    </div>
+    <div class="news-list dom-list" id="list-press" data-sec="press"></div>
+  </section>
+  <section class="view" id="view-opp">
+    <div class="banner">
+      <div class="banner-text">
+        <h1 class="long" data-i18n="opp"></h1>
+      </div>
+      <span class="shine"></span><div class="lines"><i></i><i></i><i></i></div><div class="banner-art"><span class="ring r1"></span><span class="ring r2"></span><div class="circle"><svg><use href="#i-mega"/></svg></div></div>
+    </div>
+    <div class="news-list dom-list" id="list-opp" data-sec="opp"></div>
+  </section>
+  <section class="view" id="view-pris">
+    <div class="banner">
+      <div class="banner-text">
+        <h1 class="long" data-i18n="pris"></h1>
+      </div>
+      <span class="shine"></span><div class="lines"><i></i><i></i><i></i></div><div class="banner-art"><span class="ring r1"></span><span class="ring r2"></span><div class="circle"><svg><use href="#i-chain"/></svg></div></div>
+    </div>
+    <div class="news-list dom-list" id="list-pris" data-sec="pris"></div>
+  </section>
+  <section class="view" id="view-dlive">
+    <div class="banner">
+      <div class="banner-text">
+        <span class="pill red"><i></i><span data-i18n="liveBadge">مباشر</span></span>
+        <h1 class="long" data-i18n="live">البث المباشر</h1>
+        <p data-i18n="mubeen">مبين نيوز</p>
+      </div>
+      <span class="shine"></span><div class="lines"><i></i><i></i><i></i></div><div class="banner-art"><span class="ring r1"></span><span class="ring r2"></span><div class="circle"><svg><use href="#i-live"/></svg></div></div>
+    </div>
+    <div class="stream-card big" data-stream="mubeenDom">
+      <div class="stream-logo" data-i18n="mubeenShort">مبين</div>
+      <div class="stream-info"><b data-i18n="mubeen">مبين نيوز</b><span data-i18n="mubeenSub">بث مباشر على مدار الساعة</span></div>
+      <button class="play-btn" aria-label="تشغيل"><svg><use href="#i-play"/></svg></button>
+    </div>
+  </section>
 </main>
 
 <nav class="tabs">
-  <button class="tab active" data-view="breaking"><svg><use href="#i-siren"/></svg><span data-i18n="breaking">عاجل</span></button>
-  <button class="tab" data-view="news"><svg><use href="#i-news"/></svg><span data-i18n="news">الأخبار</span></button>
-  <button class="tab" data-view="quran"><svg><use href="#i-quran"/></svg><span data-i18n="quranTab">القرآن الكريم</span></button>
-  <button class="tab" data-view="reels"><svg><use href="#i-reels"/></svg><span data-i18n="reels">ريلز</span></button>
-  <button class="tab" data-view="live"><svg><use href="#i-live"/></svg><span data-i18n="live">البث المباشر</span></button>
+  <button class="tab ir" data-view="breaking"><svg><use href="#i-siren"/></svg><span data-i18n="breaking">عاجل</span></button>
+  <button class="tab ir" data-view="news"><svg><use href="#i-news"/></svg><span data-i18n="news">الأخبار</span></button>
+  <button class="tab ir" data-view="quran"><svg><use href="#i-quran"/></svg><span data-i18n="quranTab">القرآن الكريم</span></button>
+  <button class="tab ir" data-view="reels"><svg><use href="#i-reels"/></svg><span data-i18n="reels">ريلز</span></button>
+  <button class="tab ir" data-view="live"><svg><use href="#i-live"/></svg><span data-i18n="live">البث المباشر</span></button>
+  <button class="tab dom" data-view="dnews"><svg><use href="#i-news"/></svg><span data-i18n="news">الأخبار</span></button>
+  <button class="tab dom" data-view="press"><svg><use href="#i-press"/></svg><span data-i18n="press">صحافة</span></button>
+  <button class="tab dom" data-view="opp"><svg><use href="#i-mega"/></svg><span data-i18n="oppTab">المعارضة</span></button>
+  <button class="tab dom" data-view="pris"><svg><use href="#i-chain"/></svg><span data-i18n="prisTab">معتقلو الرأي</span></button>
+  <button class="tab dom" data-view="dlive"><svg><use href="#i-live"/></svg><span data-i18n="live">البث المباشر</span></button>
 </nav>
 
 <div class="detail" id="detail" hidden>

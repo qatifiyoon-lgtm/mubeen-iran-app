@@ -177,3 +177,17 @@ body.reels-mode .ticker { display: none; }
 .act.like.on { color: #ff4d5e; }
 .act.share { color: var(--orange); }
 .card[role=button] { cursor: pointer; }
+
+/* edition switch: إيراني / داخلي */
+.ed-switch { display: flex; background: var(--panel2); border: 1px solid var(--line); border-radius: 20px; padding: 3px; }
+.ed { padding: 5px 12px; border-radius: 16px; font-size: 13px; font-weight: 900; color: #bdbdbd; white-space: nowrap; }
+.ed.on { background: var(--orange); color: #0b0b0b; }
+body.ed-ir .tab.dom, body.ed-dom .tab.ir { display: none; }
+body.ed-dom #netBadge { display: none; }
+@media (max-width: 380px) {
+  .brand-text small { display: none; }
+  .brand-text b { font-size: 19px; }
+  .top-left { gap: 6px; }
+  .icon-btn { width: 36px; height: 36px; }
+  .ed { padding: 5px 9px; }
+}
