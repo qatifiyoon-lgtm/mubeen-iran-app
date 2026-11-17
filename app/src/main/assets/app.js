@@ -678,10 +678,10 @@
     if (!reelsLoaded) { renderReels(); }
     get(REELS_URL, 20000).then(function (body) {
       var d = JSON.parse(body), list = (d && d.reels) || [];
-      var g = {}, o = [], m = 0;
-      list.forEach(function (r) { var k = Math.floor((+r.id || 0) / 1000000); (g[k] = g[k] || []).push(r); });
-      var ks = Object.keys(g); ks.forEach(function (k) { m = Math.max(m, g[k].length); });
-      for (var i = 0; i < m; i++) ks.forEach(function (k) { if (g[k][i]) o.push(g[k][i]); });
+      // newest first, by publish date (server order kept for clips without a date)
+      var o = list.map(function (r, i) { return { r: r, i: i, t: Date.parse(r.date || "") || 0 }; })
+        .sort(function (a, b) { return (b.t - a.t) || (a.i - b.i); })
+        .map(function (x) { return x.r; });
       var changed = JSON.stringify(o.map(function (r) { return r.id; })) !== JSON.stringify(reels.map(function (r) { return r.id; }));
       reels = o; save(REELS_KEY, reels);
       if (changed || !reelsLoaded) renderReels();
