@@ -650,19 +650,26 @@
   });
   // قسم «ملفات»: الملفات الخاصة والملخصات، متاح في النسختين
   var filesLoading = false;
+  var FILES_MIRROR = "http://45.89.237.183/mbn/api/";
   function loadFiles() {
     renderDomList("files"); renderDomList("sums");
     if (filesLoading) return;
     filesLoading = true;
     var jobs = DOM_SECTIONS.filter(function (s) { return s.id === "files" || s.id === "sums"; }).map(function (sec) {
-      var url = "https://mubeennews.com/wp-json/wp/v2/posts?categories=" + sec.cat[LANG] + "&per_page=" + DOM_PER_SECTION + "&_embed=1";
-      return get(url).then(function (body) {
+      var site = "https://mubeennews.com/wp-json/wp/v2/posts?categories=" + sec.cat[LANG] + "&per_page=" + DOM_PER_SECTION + "&_embed=1";
+      var mirror = FILES_MIRROR + LANG + "-" + sec.id + ".json";
+      // النسخة الإيرانية تقرأ من السيرفر الإيراني أولاً، والمحلية من الموقع أولاً، وكل منهما بديل للآخر
+      var first = ED === "dom" ? site : mirror, second = ED === "dom" ? mirror : site;
+      function useBody(body) {
         var items = parseWp(body, { id: "mubeen" });
-        if (!items.length) return;
+        if (!items.length) throw new Error("empty");
         items.forEach(function (it) { it.key = sec.id + ":" + it.key; it.sec = sec.id; });
         domData[sec.id] = items.sort(function (a, b) { return b.ts - a.ts; }).slice(0, DOM_PER_SECTION);
         save("mbn_dom_" + sec.id + "_" + LANG, domData[sec.id]);
         renderDomList(sec.id);
+      }
+      return get(first, 8000).then(useBody).catch(function () {
+        return get(second, 20000).then(useBody);
       }).catch(function () {});
     });
     Promise.all(jobs).then(function () { filesLoading = false; });
