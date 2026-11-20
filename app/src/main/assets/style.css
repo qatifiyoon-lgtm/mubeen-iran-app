@@ -293,3 +293,27 @@ body.tv .reels, body.tv .reel { height: calc(100vh - var(--top-h, 66px)); }
 .tab { min-width: 0; }
 .tab span { max-width: 100%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 body:not(.tv) .tab { font-size: 10.5px; }
+
+/* v1.8: شريط عنوان مصغّر بدل البانر الكبير (الهاتف فقط) */
+body:not(.tv) .banner { height: 62px; border-radius: 12px; margin-bottom: 12px; }
+body:not(.tv) .banner-text { flex-direction: row; align-items: center; gap: 8px; padding: 0 14px; }
+body:not(.tv) .banner-text h1, body:not(.tv) .banner-text h1.long, body:not(.tv) .banner-text h1.amiri { font-size: 24px; line-height: 1.2; }
+body:not(.tv) .banner-text p { display: none; }
+body:not(.tv) .banner-text .pill { margin: 0; }
+body:not(.tv) .banner-art { width: 64px; }
+body:not(.tv) .circle, body:not(.tv) .ring { left: 14px; width: 40px; height: 40px; }
+body:not(.tv) .ring { margin-top: -20px; }
+body:not(.tv) .circle svg { width: 22px; height: 22px; }
+body:not(.tv) .lines { bottom: 4px; height: 12px; }
+/* أزرار النشرات الثلاث في قسم التقارير */
+.periods { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-bottom: 4px; }
+.period { height: 62px; border: 0; border-radius: 12px; color: #fff; font: inherit; font-weight: 900; font-size: 13px;
+  display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 3px; cursor: pointer;
+  background: linear-gradient(120deg, #FFB000, #FF6A00); box-shadow: 0 6px 16px rgba(255,110,0,.3), inset 0 1px 0 rgba(255,255,255,.4); }
+.period svg { width: 20px; height: 20px; }
+.period.p-week { background: linear-gradient(120deg, #2ecc71, #13894a); box-shadow: 0 6px 16px rgba(46,204,113,.3), inset 0 1px 0 rgba(255,255,255,.4); }
+.period.on { outline: 3px solid #fff; outline-offset: -3px; }
+/* أيقونات الشريط السفلي: أخضر، والمحدد برتقالي */
+.tab svg { color: #2ecc71; }
+.tab.active svg { color: var(--orange); }
+.books .empty, .books .skeleton { grid-column: 1 / -1; }

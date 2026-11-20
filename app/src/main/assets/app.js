@@ -56,7 +56,7 @@
   SOURCES.forEach(function (s) { s.name = SRC_NAME[s.id]; });
 
   var T = {
-    ar: { filesTab: "ملفات", files: "ملفات خاصة", sums: "الملخصات", breaking: "عاجل", news: "الأخبار", allday: "بث على مدار الساعة", radio: "إذاعة", quran: "القرآن الكريم", quranTab: "القرآن الكريم",
+    ar: { filesTab: "تقارير", files: "ملفات خاصة", sums: "الملخصات", pDay: "النشرة اليومية", pWeek: "النشرة الأسبوعية", pMonth: "النشرة الشهرية", pAll: "كل النشرات", breaking: "عاجل", news: "الأخبار", allday: "بث على مدار الساعة", radio: "إذاعة", quran: "القرآن الكريم", quranTab: "القرآن الكريم",
           quranRadio: "إذاعة القرآن الكريم", quranSub: "تلاوات مباشرة على مدار الساعة", liveBadge: "مباشر", live: "البث المباشر",
           liveSub: "مبين نيوز • العالم • الخبر • آي فيلم",
           irinnShort: "الخبر", irinn: "قناة الخبر الإيرانية", irinnSub: "إخبارية • بث مباشر",
@@ -69,7 +69,7 @@
           failed: "تعذّر الاتصال — تُعرض آخر أخبار محفوظة", newBreaking: "أخبار عاجلة جديدة: ", updated: "تم التحديث", sign: "— مبين نيوز", langBtn: "فا",
           edIr: "شؤون إقليمية", edDom: "شؤون سعودية", press: "صحافة", opp: "منبر المعارضة", oppTab: "المعارضة", pris: "معتقلو الرأي", prisTab: "المعتقلون", liveTab: "مباشر",
           latest: "آخر الأخبار", playVideo: "تشغيل الفيديو", openVideo: "فتح الفيديو" },
-    fa: { filesTab: "پرونده‌ها", files: "پرونده‌های ویژه", sums: "خلاصه‌ها", breaking: "فوری", news: "اخبار", allday: "پخش شبانه‌روزی", radio: "رادیو", quran: "قرآن کریم", quranTab: "قرآن کریم",
+    fa: { filesTab: "گزارش‌ها", files: "پرونده‌های ویژه", sums: "خلاصه‌ها", pDay: "خلاصه روزانه", pWeek: "خلاصه هفتگی", pMonth: "خلاصه ماهانه", pAll: "همه خلاصه‌ها", breaking: "فوری", news: "اخبار", allday: "پخش شبانه‌روزی", radio: "رادیو", quran: "قرآن کریم", quranTab: "قرآن کریم",
           quranRadio: "رادیو قرآن", quranSub: "تلاوت زنده به‌صورت شبانه‌روزی", liveBadge: "زنده", live: "پخش زنده",
           liveSub: "مبین نیوز • العالم • خبر • آی‌فیلم",
           irinnShort: "خبر", irinn: "شبکه خبر", irinnSub: "خبری • پخش زنده",
@@ -308,7 +308,7 @@
       return { video: video,
         key: normKey(title), src: src.id, title: title,
         summary: htmlToText(p.excerpt && p.excerpt.rendered).slice(0, 400),
-        html: p.content && p.content.rendered, img: img, url: p.link,
+        html: p.content && p.content.rendered, img: img, url: p.link, cats: p.categories || [],
         ts: parseTs(p.date_gmt ? p.date_gmt + "Z" : p.date)
       };
     }).filter(function (x) { return x.title; });
@@ -594,8 +594,12 @@
     news = domAll();                       // للمشاركة وفتح الخبر
     breaking = news.slice(0, TICKER_MAX);  // شريط «آخر الأخبار»
   }
+  // تصنيفات النشرات: يومية، أسبوعية، شهرية (عربي / فارسي)
+  var PERIOD_CATS = { day: [653, 691], week: [581, 683], month: [643, 687] };
+  var sumPeriod = "";
   function renderDomList(secId) {
     var box = $("list-" + secId), list = domData[secId];
+    if (secId === "sums" && sumPeriod) list = list.filter(function (n) { return (n.cats || []).some(function (c) { return PERIOD_CATS[sumPeriod].indexOf(c) > -1; }); });
     if (!list.length) {
       box.innerHTML = (loading || filesLoading) ? '<div class="skeleton"></div><div class="skeleton"></div><div class="skeleton"></div>' : '<div class="empty">' + T.noNews + '</div>';
       return;
@@ -674,6 +678,16 @@
     });
     Promise.all(jobs).then(function () { filesLoading = false; });
   }
+  Array.prototype.forEach.call(document.querySelectorAll(".period"), function (b) {
+    b.addEventListener("click", function () {
+      var p = b.getAttribute("data-period");
+      sumPeriod = sumPeriod === p ? "" : p;
+      Array.prototype.forEach.call(document.querySelectorAll(".period"), function (x) { x.classList.toggle("on", x.getAttribute("data-period") === sumPeriod); });
+      renderDomList("sums");
+      var first = $("list-sums").querySelector(".card");
+      if (sumPeriod && first) { var it = findItem(first.getAttribute("data-key")); if (it) openDetail(it); }
+    });
+  });
   var HOME = ED === "dom" ? "dnews" : "breaking";
 
   // ---------- events ----------
