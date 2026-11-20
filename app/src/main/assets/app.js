@@ -56,7 +56,7 @@
   SOURCES.forEach(function (s) { s.name = SRC_NAME[s.id]; });
 
   var T = {
-    ar: { breaking: "عاجل", news: "الأخبار", allday: "بث على مدار الساعة", radio: "إذاعة", quran: "القرآن الكريم", quranTab: "القرآن الكريم",
+    ar: { filesTab: "ملفات", files: "ملفات خاصة", sums: "الملخصات", breaking: "عاجل", news: "الأخبار", allday: "بث على مدار الساعة", radio: "إذاعة", quran: "القرآن الكريم", quranTab: "القرآن الكريم",
           quranRadio: "إذاعة القرآن الكريم", quranSub: "تلاوات مباشرة على مدار الساعة", liveBadge: "مباشر", live: "البث المباشر",
           liveSub: "مبين نيوز • العالم • الخبر • آي فيلم",
           irinnShort: "الخبر", irinn: "قناة الخبر الإيرانية", irinnSub: "إخبارية • بث مباشر",
@@ -67,9 +67,9 @@
           back: "→ رجوع", share: "مشاركة", tickerLoading: "جارٍ تحميل الأخبار العاجلة…", noBreaking: "لا توجد أخبار عاجلة بعد",
           noNews: "لا توجد أخبار حالياً — اضغط زر التحديث", readSrc: "قراءة الخبر في المصدر", source: "المصدر:", like: "إعجاب", internal: "الشبكة الداخلية", offline: "غير متصل",
           failed: "تعذّر الاتصال — تُعرض آخر أخبار محفوظة", newBreaking: "أخبار عاجلة جديدة: ", updated: "تم التحديث", sign: "— مبين نيوز", langBtn: "فا",
-          edIr: "شؤون إقليمية", edDom: "شؤون سعودية", press: "صحافة", opp: "منبر المعارضة", oppTab: "المعارضة", pris: "معتقلو الرأي", prisTab: "معتقلو الرأي",
+          edIr: "شؤون إقليمية", edDom: "شؤون سعودية", press: "صحافة", opp: "منبر المعارضة", oppTab: "المعارضة", pris: "معتقلو الرأي", prisTab: "المعتقلون", liveTab: "مباشر",
           latest: "آخر الأخبار", playVideo: "تشغيل الفيديو", openVideo: "فتح الفيديو" },
-    fa: { breaking: "فوری", news: "اخبار", allday: "پخش شبانه‌روزی", radio: "رادیو", quran: "قرآن کریم", quranTab: "قرآن کریم",
+    fa: { filesTab: "پرونده‌ها", files: "پرونده‌های ویژه", sums: "خلاصه‌ها", breaking: "فوری", news: "اخبار", allday: "پخش شبانه‌روزی", radio: "رادیو", quran: "قرآن کریم", quranTab: "قرآن کریم",
           quranRadio: "رادیو قرآن", quranSub: "تلاوت زنده به‌صورت شبانه‌روزی", liveBadge: "زنده", live: "پخش زنده",
           liveSub: "مبین نیوز • العالم • خبر • آی‌فیلم",
           irinnShort: "خبر", irinn: "شبکه خبر", irinnSub: "خبری • پخش زنده",
@@ -80,7 +80,7 @@
           back: "→ بازگشت", share: "اشتراک", tickerLoading: "در حال بارگذاری اخبار فوری…", noBreaking: "هنوز خبر فوری‌ای نیست",
           noNews: "فعلاً خبری نیست — دکمه به‌روزرسانی را بزنید", readSrc: "خواندن خبر در منبع", source: "منبع:", like: "پسندیدن", internal: "شبکه داخلی", offline: "آفلاین",
           failed: "اتصال برقرار نشد — آخرین اخبار ذخیره‌شده نمایش داده می‌شود", newBreaking: "اخبار فوری جدید: ", updated: "به‌روز شد", sign: "— مبین نیوز", langBtn: "ع",
-          edIr: "امور منطقه‌ای", edDom: "امور عربستان", press: "مطبوعات", opp: "تریبون اپوزیسیون", oppTab: "اپوزیسیون", pris: "زندانیان عقیدتی", prisTab: "زندانیان",
+          edIr: "امور منطقه‌ای", edDom: "امور عربستان", press: "مطبوعات", opp: "تریبون اپوزیسیون", oppTab: "اپوزیسیون", pris: "زندانیان عقیدتی", prisTab: "زندانیان", liveTab: "زنده",
           latest: "آخرین اخبار", playVideo: "پخش ویدیو", openVideo: "باز کردن ویدیو" }
   }[LANG];
   function applyLang() {
@@ -381,6 +381,9 @@
   function findItem(key) {
     for (var i = 0; i < news.length; i++) if (news[i].key === key) return news[i];
     for (var j = 0; j < breaking.length; j++) if (breaking[j].key === key) return breaking[j];
+    if (typeof domData !== "undefined") {
+      for (var s2 in domData) { var l2 = domData[s2] || []; for (var k = 0; k < l2.length; k++) if (l2[k].key === key) return l2[k]; }
+    }
     return null;
   }
   function shareItem(it) {
@@ -574,7 +577,9 @@
     { id: "dnews", cat: { ar: 12,  fa: 40  } },   // الأخبار
     { id: "press", cat: { ar: 68,  fa: 73  } },   // صحافة
     { id: "opp",   cat: { ar: 86,  fa: 91  } },   // منبر المعارضة
-    { id: "pris",  cat: { ar: 124, fa: 129 } }    // معتقلو الرأي
+    { id: "pris",  cat: { ar: 124, fa: 129 } },   // معتقلو الرأي
+    { id: "files", cat: { ar: "662", fa: "695" } },              // ملفات خاصة (أغلفة كتب)
+    { id: "sums",  cat: { ar: "581,643,653", fa: "683,687,691" } } // الملخصات: الأسبوعية والشهرية واليومية
   ];
   var DOM_PER_SECTION = 40;
   var domData = {};
@@ -592,7 +597,14 @@
   function renderDomList(secId) {
     var box = $("list-" + secId), list = domData[secId];
     if (!list.length) {
-      box.innerHTML = loading ? '<div class="skeleton"></div><div class="skeleton"></div><div class="skeleton"></div>' : '<div class="empty">' + T.noNews + '</div>';
+      box.innerHTML = (loading || filesLoading) ? '<div class="skeleton"></div><div class="skeleton"></div><div class="skeleton"></div>' : '<div class="empty">' + T.noNews + '</div>';
+      return;
+    }
+    if (secId === "files") {
+      box.innerHTML = list.map(function (n) {
+        var pic = n.img ? '<div class="cover" style="background-image:url(\'' + esc(n.img).replace(/'/g, "%27") + '\')"></div>' : '<div class="cover ph"><svg><use href="#i-book"/></svg></div>';
+        return '<div class="card book" role="button" tabindex="0" data-key="' + esc(n.key) + '">' + pic + '<div class="title">' + esc(n.title.replace(/^\s*(ملف خاص|پرونده ویژه)\s*[|｜:]\s*/, "")) + '</div></div>';
+      }).join("");
       return;
     }
     box.innerHTML = list.map(function (n, i) {
@@ -636,6 +648,25 @@
       var it = findItem(c.getAttribute("data-key")); if (it) openDetail(it);
     });
   });
+  // قسم «ملفات»: الملفات الخاصة والملخصات، متاح في النسختين
+  var filesLoading = false;
+  function loadFiles() {
+    renderDomList("files"); renderDomList("sums");
+    if (filesLoading) return;
+    filesLoading = true;
+    var jobs = DOM_SECTIONS.filter(function (s) { return s.id === "files" || s.id === "sums"; }).map(function (sec) {
+      var url = "https://mubeennews.com/wp-json/wp/v2/posts?categories=" + sec.cat[LANG] + "&per_page=" + DOM_PER_SECTION + "&_embed=1";
+      return get(url).then(function (body) {
+        var items = parseWp(body, { id: "mubeen" });
+        if (!items.length) return;
+        items.forEach(function (it) { it.key = sec.id + ":" + it.key; it.sec = sec.id; });
+        domData[sec.id] = items.sort(function (a, b) { return b.ts - a.ts; }).slice(0, DOM_PER_SECTION);
+        save("mbn_dom_" + sec.id + "_" + LANG, domData[sec.id]);
+        renderDomList(sec.id);
+      }).catch(function () {});
+    });
+    Promise.all(jobs).then(function () { filesLoading = false; });
+  }
   var HOME = ED === "dom" ? "dnews" : "breaking";
 
   // ---------- events ----------
@@ -646,6 +677,7 @@
     save("mbn_tab_" + ED, name);
     document.body.classList.toggle("reels-mode", name === "reels");
     if (name === "reels") loadReels(); else pauseReels();
+    if (name === "files") loadFiles();
   }
 
   // ---------- reels ----------
