@@ -28,6 +28,7 @@
     <symbol id="i-mega" viewBox="0 0 64 64"><g fill="none" stroke="currentColor" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"><path d="M10 26v12h10l20 12V14L20 26z"/><path d="M20 38l4 14h6l-3-12"/><path d="M48 24a10 10 0 0 1 0 16"/><path d="M53 18a18 18 0 0 1 0 28"/></g></symbol>
     <symbol id="i-chain" viewBox="0 0 64 64"><g fill="none" stroke="currentColor" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"><path d="M14 10v44"/><path d="M26 10v44"/><path d="M38 10v44"/><path d="M50 10v44"/><path d="M8 10h48"/><path d="M8 54h48"/></g></symbol>
     <symbol id="i-book" viewBox="0 0 64 64"><g fill="none" stroke="currentColor" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"><path d="M14 10h30a6 6 0 0 1 6 6v38H20a6 6 0 0 1-6-6z"/><path d="M14 48a6 6 0 0 1 6-6h30"/><path d="M24 20h16"/><path d="M24 28h12"/></g></symbol>
+    <symbol id="i-brush" viewBox="0 0 64 64"><g fill="none" stroke="currentColor" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"><path d="M52 8 28 32"/><path d="M24 36c-6 0-10 4-10 10 0 4-2 7-6 8 4 3 10 4 16 2 6-2 9-7 8-12z"/><path d="m28 32 4 4"/><rect x="34" y="40" width="22" height="16" rx="3"/><path d="M38 47h14"/></g></symbol>
     <symbol id="i-play" viewBox="0 0 24 24"><path d="M8 5v14l11-7z" fill="currentColor"/></symbol>
     <symbol id="i-refresh" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M20 11a8 8 0 1 0-2.3 5.7"/><path d="M20 4v7h-7"/></g></symbol>
   </defs>
@@ -194,6 +195,15 @@
     <div class="books dom-list" id="list-files" data-sec="files"></div>
     <div class="news-list dom-list" id="list-sums" data-sec="sums" hidden></div>
   </section>
+  <section class="view" id="view-cari">
+    <div class="banner">
+      <div class="banner-text">
+        <h1 data-i18n="cari"></h1>
+      </div>
+      <span class="shine"></span><div class="lines"><i></i><i></i><i></i></div><div class="banner-art"><span class="ring r1"></span><span class="ring r2"></span><div class="circle"><svg><use href="#i-brush"/></svg></div></div>
+    </div>
+    <div class="cari-list dom-list" id="list-cari" data-sec="cari"></div>
+  </section>
   <section class="view" id="view-dlive">
     <div class="banner">
       <div class="banner-text">
@@ -223,6 +233,7 @@
   <button class="tab dom" data-view="opp"><svg><use href="#i-mega"/></svg><span data-i18n="oppTab">المعارضة</span></button>
   <button class="tab dom" data-view="pris"><svg><use href="#i-chain"/></svg><span data-i18n="prisTab">معتقلو الرأي</span></button>
   <button class="tab dom" data-view="files"><svg><use href="#i-book"/></svg><span data-i18n="filesTab">ملفات</span></button>
+  <button class="tab dom" data-view="cari"><svg><use href="#i-brush"/></svg><span data-i18n="cariTab">كاريكاتير</span></button>
   <button class="tab dom" data-view="reels"><svg><use href="#i-reels"/></svg><span data-i18n="reels">ريلز</span></button>
   <button class="tab dom" data-view="dlive"><svg><use href="#i-live"/></svg><span data-i18n="liveTab">البث المباشر</span></button>
 </nav>

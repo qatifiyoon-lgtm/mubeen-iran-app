@@ -317,3 +317,12 @@ body.reels-mode .periods, body.tv .periods { display: none; }
 .tab svg { color: #2ecc71; }
 .tab.active svg { color: var(--orange); }
 .books .empty, .books .skeleton { grid-column: 1 / -1; }
+
+/* كاريكاتير: الصورة كاملة دون قص */
+.cari-list { display: flex; flex-direction: column; gap: 16px; }
+.card.cari { flex-direction: column; padding: 0; overflow: hidden; }
+.card.cari .cari-img { width: 100%; height: auto; display: block; background: var(--panel2); }
+.card.cari .body { padding: 10px 12px 12px; }
+.card.cari.tv-focus, .card.cari.focus { box-shadow: 0 0 0 3px var(--orange); }
+#detailBody img.hero.full { height: auto !important; max-height: none !important; object-fit: contain !important; aspect-ratio: auto !important; }
+@media (orientation: landscape) and (min-width: 900px) { .cari-list { display: grid; grid-template-columns: repeat(2, 1fr); } }

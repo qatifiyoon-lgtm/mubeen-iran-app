@@ -56,7 +56,7 @@
   SOURCES.forEach(function (s) { s.name = SRC_NAME[s.id]; });
 
   var T = {
-    ar: { filesTab: "تقارير", files: "ملفات خاصة", sums: "الملخصات", pDay: "النشرة اليومية", pWeek: "النشرة الأسبوعية", pMonth: "النشرة الشهرية", pAll: "كل النشرات", loadingTxt: "جارٍ التحميل…", breaking: "عاجل", news: "الأخبار", allday: "بث على مدار الساعة", radio: "إذاعة", quran: "القرآن الكريم", quranTab: "القرآن الكريم",
+    ar: { cariTab: "كاريكاتير", cari: "كاريكاتير مبين", filesTab: "تقارير", files: "ملفات خاصة", sums: "الملخصات", pDay: "النشرة اليومية", pWeek: "النشرة الأسبوعية", pMonth: "النشرة الشهرية", pAll: "كل النشرات", loadingTxt: "جارٍ التحميل…", breaking: "عاجل", news: "الأخبار", allday: "بث على مدار الساعة", radio: "إذاعة", quran: "القرآن الكريم", quranTab: "القرآن الكريم",
           quranRadio: "إذاعة القرآن الكريم", quranSub: "تلاوات مباشرة على مدار الساعة", liveBadge: "مباشر", live: "البث المباشر",
           liveSub: "مبين نيوز • العالم • الخبر • آي فيلم",
           irinnShort: "الخبر", irinn: "قناة الخبر الإيرانية", irinnSub: "إخبارية • بث مباشر",
@@ -69,7 +69,7 @@
           failed: "تعذّر الاتصال — تُعرض آخر أخبار محفوظة", newBreaking: "أخبار عاجلة جديدة: ", updated: "تم التحديث", sign: "— مبين نيوز", langBtn: "فا",
           edIr: "شؤون إقليمية", edDom: "شؤون سعودية", press: "صحافة", opp: "منبر المعارضة", oppTab: "المعارضة", pris: "معتقلو الرأي", prisTab: "المعتقلون", liveTab: "مباشر",
           latest: "آخر الأخبار", playVideo: "تشغيل الفيديو", openVideo: "فتح الفيديو" },
-    fa: { filesTab: "گزارش‌ها", files: "پرونده‌های ویژه", sums: "خلاصه‌ها", pDay: "خلاصه روزانه", pWeek: "خلاصه هفتگی", pMonth: "خلاصه ماهانه", pAll: "همه خلاصه‌ها", loadingTxt: "در حال بارگذاری…", breaking: "فوری", news: "اخبار", allday: "پخش شبانه‌روزی", radio: "رادیو", quran: "قرآن کریم", quranTab: "قرآن کریم",
+    fa: { cariTab: "کاریکاتور", cari: "کاریکاتور مبین", filesTab: "گزارش‌ها", files: "پرونده‌های ویژه", sums: "خلاصه‌ها", pDay: "خلاصه روزانه", pWeek: "خلاصه هفتگی", pMonth: "خلاصه ماهانه", pAll: "همه خلاصه‌ها", loadingTxt: "در حال بارگذاری…", breaking: "فوری", news: "اخبار", allday: "پخش شبانه‌روزی", radio: "رادیو", quran: "قرآن کریم", quranTab: "قرآن کریم",
           quranRadio: "رادیو قرآن", quranSub: "تلاوت زنده به‌صورت شبانه‌روزی", liveBadge: "زنده", live: "پخش زنده",
           liveSub: "مبین نیوز • العالم • خبر • آی‌فیلم",
           irinnShort: "خبر", irinn: "شبکه خبر", irinnSub: "خبری • پخش زنده",
@@ -302,13 +302,15 @@
       var img = "";
       try { img = p._embedded["wp:featuredmedia"][0].source_url; } catch (e) {}
       if (!img && p.jetpack_featured_media_url) img = p.jetpack_featured_media_url;
+      var imgL = "";
+      try { var sz = p._embedded["wp:featuredmedia"][0].media_details.sizes; imgL = (sz.large || sz.medium_large || {}).source_url || ""; } catch (e) {}
       var video = null;
       try { var fm = p._embedded["wp:featuredmedia"][0]; if (/^video/.test(fm.mime_type)) { video = { src: fm.source_url, poster: "" }; img = ""; } } catch (e) {}
       if (!video) video = firstVideo(p.content && p.content.rendered, p.link);
       return { video: video,
         key: normKey(title), src: src.id, title: title,
         summary: htmlToText(p.excerpt && p.excerpt.rendered).slice(0, 400),
-        html: p.content && p.content.rendered, img: img, url: p.link, cats: p.categories || [],
+        html: p.content && p.content.rendered, img: img, imgL: imgL, url: p.link, cats: p.categories || [],
         ts: parseTs(p.date_gmt ? p.date_gmt + "Z" : p.date)
       };
     }).filter(function (x) { return x.title; });
@@ -484,7 +486,7 @@
       hero = videoBlock(v.src, v.poster || item.img, v.page || item.url, true);
     } else if (item.img) {
       heroSrc = item.img;
-      hero = '<img class="hero" src="' + esc(item.img) + '" alt="" onerror="this.remove()">';
+      hero = '<img class="hero' + (item.sec === "cari" ? " full" : "") + '" src="' + esc(item.img) + '" alt="" onerror="this.remove()">';
     }
     var body = blocks.map(function (b) {
       if (b.t === "p") return "<p>" + esc(b.text) + "</p>";
@@ -578,6 +580,7 @@
     { id: "press", cat: { ar: 68,  fa: 73  } },   // صحافة
     { id: "opp",   cat: { ar: 86,  fa: 91  } },   // منبر المعارضة
     { id: "pris",  cat: { ar: 124, fa: 129 } },   // معتقلو الرأي
+    { id: "cari",  cat: { ar: 755, fa: 760 } },   // كاريكاتير
     { id: "files", cat: { ar: "662", fa: "695" } },              // ملفات خاصة (أغلفة كتب)
     { id: "sums",  cat: { ar: "581,643,653", fa: "683,687,691" } } // الملخصات: الأسبوعية والشهرية واليومية
   ];
@@ -600,6 +603,14 @@
     var box = $("list-" + secId), list = domData[secId];
     if (!list.length) {
       box.innerHTML = (loading || filesLoading) ? '<div class="skeleton"></div><div class="skeleton"></div><div class="skeleton"></div>' : '<div class="empty">' + T.noNews + '</div>';
+      return;
+    }
+    if (secId === "cari") {
+      box.innerHTML = list.map(function (n) {
+        var pic = n.img ? '<img class="cari-img" src="' + esc(n.imgL || n.img) + '" alt="" loading="lazy" onerror="this.remove()">' : "";
+        return '<div class="card cari" role="button" tabindex="0" data-key="' + esc(n.key) + '">' + pic +
+          '<div class="body"><div class="title">' + esc(n.title) + '</div><div class="meta"><span>' + ago(n.ts) + "</span></div>" + actions(n.key) + "</div></div>";
+      }).join("");
       return;
     }
     if (secId === "files") {
