@@ -581,7 +581,6 @@
     { id: "opp",   cat: { ar: 86,  fa: 91  } },   // منبر المعارضة
     { id: "pris",  cat: { ar: 124, fa: 129 } },   // معتقلو الرأي
     { id: "cari",  cat: { ar: 755, fa: 760 } },   // كاريكاتير
-    { id: "files", cat: { ar: "662", fa: "695" } },              // ملفات خاصة (أغلفة كتب)
     { id: "sums",  cat: { ar: "581,643,653", fa: "683,687,691" } } // الملخصات: الأسبوعية والشهرية واليومية
   ];
   var DOM_PER_SECTION = 40;
@@ -665,10 +664,10 @@
   var filesLoading = false;
   var FILES_MIRROR = "http://45.89.237.183/mbn/api/";
   function loadFiles() {
-    renderDomList("files"); renderDomList("sums");
+    renderDomList("sums");
     if (filesLoading) return;
     filesLoading = true;
-    var jobs = DOM_SECTIONS.filter(function (s) { return s.id === "files" || s.id === "sums"; }).map(function (sec) {
+    var jobs = DOM_SECTIONS.filter(function (s) { return s.id === "sums"; }).map(function (sec) {
       var site = "https://mubeennews.com/wp-json/wp/v2/posts?categories=" + sec.cat[LANG] + "&per_page=" + DOM_PER_SECTION + "&_embed=1";
       var mirror = FILES_MIRROR + LANG + "-" + sec.id + ".json";
       // النسخة الإيرانية تقرأ من السيرفر الإيراني أولاً، والمحلية من الموقع أولاً، وكل منهما بديل للآخر
@@ -713,7 +712,6 @@
     save("mbn_tab_" + ED, name);
     document.body.classList.toggle("reels-mode", name === "reels");
     if (name === "reels") loadReels(); else pauseReels();
-    if (name === "files") loadFiles();
   }
 
   // ---------- reels ----------
