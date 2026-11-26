@@ -1,8 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <network-security-config>
-    <base-config cleartextTrafficPermitted="true">
+    <!-- كل الاتصالات مشفّرة (HTTPS) ما عدا السيرفر الإيراني الذي لا يملك شهادة -->
+    <base-config cleartextTrafficPermitted="false">
         <trust-anchors>
             <certificates src="system" />
         </trust-anchors>
     </base-config>
+    <domain-config cleartextTrafficPermitted="true">
+        <domain includeSubdomains="false">45.89.237.183</domain>
+    </domain-config>
 </network-security-config>
