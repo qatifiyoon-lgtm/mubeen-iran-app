@@ -67,12 +67,12 @@ public class MainActivity extends Activity {
         WebSettings s = web.getSettings();
         s.setJavaScriptEnabled(true);
         s.setDomStorageEnabled(true);
-        s.setDatabaseEnabled(true);
-        s.setAllowFileAccess(true);
+        s.setAllowFileAccess(false);
+        s.setAllowContentAccess(false);
         s.setMediaPlaybackRequiresUserGesture(false);
         s.setTextZoom(100);
         if (Build.VERSION.SDK_INT >= 21) {
-            s.setMixedContentMode(WebSettings.MIXED_CONTENT_ALWAYS_ALLOW);
+            s.setMixedContentMode(WebSettings.MIXED_CONTENT_COMPATIBILITY_MODE);
         }
 
         web.setWebChromeClient(new WebChromeClient());
@@ -111,7 +111,28 @@ public class MainActivity extends Activity {
         super.onDestroy();
     }
 
+    // الجهات الوحيدة التي يحق للتطبيق جلب البيانات منها
+    static final String[] ALLOWED_HOSTS = {
+            "mubeennews.com", "qatifiyoon.com", "45.89.237.183", "t.me",
+            "telewebion.ir", "mehrnews.com", "irna.ir", "tasnimnews.ir",
+            "isna.ir", "mashreghnews.ir"
+    };
+
+    static boolean isAllowed(String address) {
+        try {
+            URL u = new URL(address);
+            String p = u.getProtocol();
+            if (!"https".equals(p) && !"http".equals(p)) return false;
+            String h = u.getHost().toLowerCase();
+            for (String a : ALLOWED_HOSTS) {
+                if (h.equals(a) || h.endsWith("." + a)) return true;
+            }
+        } catch (Exception ignored) { }
+        return false;
+    }
+
     private void openExternalUrl(String url) {
+        if (url == null || !(url.startsWith("https://") || url.startsWith("http://"))) return;
         try {
             startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(url)));
         } catch (Exception ignored) { }
@@ -130,6 +151,7 @@ public class MainActivity extends Activity {
     static byte[] httpGet(String address) throws Exception {
         String current = address;
         for (int hop = 0; hop < 6; hop++) {
+            if (!isAllowed(current)) throw new Exception("blocked host");
             HttpURLConnection c = (HttpURLConnection) new URL(current).openConnection();
             c.setInstanceFollowRedirects(false);
             c.setConnectTimeout(15000);
